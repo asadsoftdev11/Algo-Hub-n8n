@@ -1,9 +1,11 @@
 import { Component } from '@angular/core';
+import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 
 @Component({
-  imports: [],
   selector: 'app-shell',
-  styleUrl: './shell.css',
+  imports: [RouterOutlet, RouterLink, RouterLinkActive],
   templateUrl: './shell.html',
 })
-export class Shell {}
+export class Shell {
+  links = [{ label: 'Dashboard', path: '/dashboard' }];
+}
