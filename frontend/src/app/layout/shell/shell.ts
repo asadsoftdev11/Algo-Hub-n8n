@@ -7,5 +7,5 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
   templateUrl: './shell.html',
 })
 export class Shell {
-  links = [{ label: 'Dashboard', path: '/dashboard' }];
+  links = [{ label: 'Dashboard', path: '/app/dashboard' }];
 }

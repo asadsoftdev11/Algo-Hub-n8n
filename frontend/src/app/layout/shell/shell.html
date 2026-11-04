@@ -1,25 +1,26 @@
 <div class="flex min-h-screen bg-slate-50">
-  <aside class="hidden md:block w-64 bg-white border-r border-slate-200 p-5">
-    <h1 class="text-xl font-bold text-violet-600 mb-8">AutoPost AI</h1>
-    <nav class="space-y-1">
+  <aside class="hidden md:flex w-64 flex-col bg-white border-r border-slate-200 p-5">
+    <a routerLink="/" class="text-xl font-bold text-emerald-700 mb-8">AutoPost AI</a>
+    <nav class="space-y-1 flex-1">
       @for (link of links; track link.path) {
         <a
           [routerLink]="link.path"
-          routerLinkActive="bg-violet-50 text-violet-700"
+          routerLinkActive="bg-emerald-50 text-emerald-700"
           class="block rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100"
         >
           {{ link.label }}
         </a>
       }
     </nav>
+    <a routerLink="/signin" class="text-sm font-medium text-slate-500 hover:text-emerald-700">Log out</a>
   </aside>
 
   <div class="flex-1 flex flex-col">
     <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6">
       <span class="text-sm text-slate-500">Welcome back</span>
       <div class="flex items-center gap-3">
-        <span class="text-xs font-medium rounded-full bg-violet-100 text-violet-700 px-3 py-1">Free plan</span>
-        <div class="h-9 w-9 rounded-full bg-violet-600 text-white flex items-center justify-center text-sm font-semibold">A</div>
+        <span class="text-xs font-medium rounded-full bg-amber-100 text-amber-800 px-3 py-1">Free plan</span>
+        <div class="h-9 w-9 rounded-full bg-emerald-600 text-white flex items-center justify-center text-sm font-semibold">A</div>
       </div>
     </header>
 
