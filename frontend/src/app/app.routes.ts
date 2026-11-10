@@ -4,7 +4,9 @@ import { Signin } from './pages/signin/signin';
 import { Signup } from './pages/signup/signup';
 import { Shell } from './layout/shell/shell';
 import { Create } from './pages/create/create';
+import { Posts } from './pages/posts/posts';
 import { Dashboard } from './pages/dashboard/dashboard';
+
 
 export const routes: Routes = [
   { path: '', component: Home },
@@ -16,6 +18,7 @@ export const routes: Routes = [
     children: [
       { path: '', redirectTo: 'create', pathMatch: 'full' },
       { path: 'create', component: Create },
+      { path: 'posts', component: Posts },
       { path: 'dashboard', component: Dashboard },
     ],
   },

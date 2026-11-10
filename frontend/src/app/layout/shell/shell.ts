@@ -9,6 +9,7 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 export class Shell {
      links = [
     { label: 'Create post', path: '/app/create' },
+    { label: 'Posts', path: '/app/posts' },
     { label: 'Dashboard', path: '/app/dashboard' },
   ];
 }
