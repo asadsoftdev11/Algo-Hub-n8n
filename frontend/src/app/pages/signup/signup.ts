@@ -21,6 +21,6 @@ export class Signup {
   }
 
   submit() {
-    this.router.navigate(['/app/dashboard']);
+        this.router.navigate(['/app/create']);
   }
 }

@@ -1,0 +1,76 @@
+<div class="mx-auto max-w-5xl">
+  <h2 class="text-2xl font-bold text-slate-900">Create video</h2>
+  <p class="mt-1 text-sm text-slate-500">Type one idea. We write the script, build the video, and publish it.</p>
+
+  <div class="mt-4 rounded-lg bg-amber-50 px-4 py-2 text-xs text-amber-800">
+    Demo mode: nothing is posted until the automation is connected.
+  </div>
+
+  <div class="mt-6 grid gap-6 lg:grid-cols-2">
+    <div class="rounded-2xl border border-slate-200 bg-white p-6">
+      <label class="block text-sm font-semibold text-slate-800">Your idea or title</label>
+      <textarea
+        rows="4"
+        maxlength="200"
+        [(ngModel)]="title"
+        [disabled]="running()"
+        placeholder="Example: 5 daily habits for a productive morning"
+        class="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:bg-slate-50"
+      ></textarea>
+      <p class="mt-1 text-xs text-slate-500">{{ title.length }}/200. Minimum 5 characters.</p>
+
+      <p class="mt-6 text-sm font-semibold text-slate-800">Publish to</p>
+      <div class="mt-2 grid grid-cols-2 gap-3">
+        @for (p of platforms; track p.name) {
+          <label
+            class="flex cursor-pointer items-center gap-3 rounded-lg border px-4 py-3 text-sm font-medium"
+            [class]="p.selected ? 'border-emerald-500 bg-emerald-50 text-emerald-800' : 'border-slate-200 text-slate-700'"
+          >
+            <input type="checkbox" [(ngModel)]="p.selected" [disabled]="running()" class="accent-emerald-600" />
+            {{ p.name }}
+          </label>
+        }
+      </div>
+
+      <button
+        (click)="execute()"
+        [disabled]="!canRun"
+        class="mt-6 w-full rounded-lg bg-emerald-600 py-3 font-semibold text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        {{ running() ? 'Working on it...' : 'Execute' }}
+      </button>
+    </div>
+
+    <div class="rounded-2xl border border-slate-200 bg-white p-6">
+      <p class="font-semibold text-slate-900">Progress</p>
+
+      @if (currentStage() < 0) {
+        <p class="mt-3 text-sm text-slate-500">Your progress will appear here after you click Execute.</p>
+      }
+
+      <ul class="mt-4 space-y-4">
+        @for (s of stages; track s; let i = $index) {
+          <li class="flex items-center gap-3 text-sm">
+            <span class="flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold" [class]="badge(i)">
+              {{ i < currentStage() ? '✓' : i + 1 }}
+            </span>
+            <span [class]="i <= currentStage() ? 'font-medium text-slate-900' : 'text-slate-400'">{{ s }}</span>
+            @if (i === currentStage() && running()) {
+              <span class="text-xs text-amber-600">In progress...</span>
+            }
+          </li>
+        }
+      </ul>
+
+      @if (done()) {
+        <div class="mt-6 rounded-lg bg-emerald-50 p-4">
+          <p class="font-semibold text-emerald-800">All done!</p>
+          <p class="mt-1 text-sm text-emerald-700">Your video was sent to: {{ publishedTo() }}.</p>
+          <button (click)="reset()" class="mt-3 rounded-lg border border-emerald-600 px-4 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-100">
+            Create another
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+</div>

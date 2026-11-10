@@ -3,6 +3,7 @@ import { Home } from './pages/home/home';
 import { Signin } from './pages/signin/signin';
 import { Signup } from './pages/signup/signup';
 import { Shell } from './layout/shell/shell';
+import { Create } from './pages/create/create';
 import { Dashboard } from './pages/dashboard/dashboard';
 
 export const routes: Routes = [
@@ -13,7 +14,8 @@ export const routes: Routes = [
     path: 'app',
     component: Shell,
     children: [
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: '', redirectTo: 'create', pathMatch: 'full' },
+      { path: 'create', component: Create },
       { path: 'dashboard', component: Dashboard },
     ],
   },
