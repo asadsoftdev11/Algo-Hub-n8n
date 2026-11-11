@@ -6,6 +6,7 @@ import { Shell } from './layout/shell/shell';
 import { Create } from './pages/create/create';
 import { Posts } from './pages/posts/posts';
 import { Dashboard } from './pages/dashboard/dashboard';
+import { Accounts } from './pages/accounts/accounts';
 
 
 export const routes: Routes = [
@@ -19,6 +20,7 @@ export const routes: Routes = [
       { path: '', redirectTo: 'create', pathMatch: 'full' },
       { path: 'create', component: Create },
       { path: 'posts', component: Posts },
+      { path: 'accounts', component: Accounts },
       { path: 'dashboard', component: Dashboard },
     ],
   },

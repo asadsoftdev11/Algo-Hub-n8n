@@ -1,16 +1,19 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { AccountsService } from '../../services/accounts.service';
 import { Platform, PostRequest, PostsService, PublishMode } from '../../services/posts.service';
 
 type Step = 'form' | 'review' | 'progress' | 'done';
 
 @Component({
   selector: 'app-create',
-  imports: [FormsModule],
+  imports: [FormsModule, RouterLink],
   templateUrl: './create.html',
 })
 export class Create {
   private postsService = inject(PostsService);
+  private accountsService = inject(AccountsService);
 
   readonly stepLabels = ['Create', 'Review', 'Publish'];
   readonly today = new Date().toISOString().slice(0, 10);
@@ -24,7 +27,7 @@ export class Create {
   timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   platforms: { name: Platform; selected: boolean }[] = [
-    { name: 'TikTok', selected: true },
+    { name: 'TikTok', selected: false },
     { name: 'Instagram', selected: false },
     { name: 'Facebook', selected: false },
     { name: 'LinkedIn', selected: false },
@@ -42,7 +45,7 @@ export class Create {
   }
 
   get selectedPlatforms(): Platform[] {
-    return this.platforms.filter((p) => p.selected).map((p) => p.name);
+    return this.platforms.filter((p) => p.selected && this.isConnected(p.name)).map((p) => p.name);
   }
 
   get isValid() {
@@ -50,6 +53,10 @@ export class Create {
     const hasPlatform = this.selectedPlatforms.length > 0;
     const hasSchedule = this.publishMode === 'now' || (!!this.scheduleDate && !!this.scheduleTime);
     return hasIdea && hasPlatform && hasSchedule;
+  }
+
+  isConnected(name: Platform) {
+    return this.accountsService.isConnected(name);
   }
 
   goToReview() {
@@ -93,7 +100,7 @@ export class Create {
     this.publishMode = 'now';
     this.scheduleDate = '';
     this.scheduleTime = '';
-    this.platforms.forEach((p) => (p.selected = p.name === 'TikTok'));
+    this.platforms.forEach((p) => (p.selected = false));
     this.step.set('form');
   }
 

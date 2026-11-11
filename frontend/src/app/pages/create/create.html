@@ -43,19 +43,22 @@
         class="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
       ></textarea>
 
-      <p class="mt-6 text-sm font-semibold text-slate-800">Publish to</p>
+           <p class="mt-6 text-sm font-semibold text-slate-800">Publish to</p>
       <div class="mt-2 grid grid-cols-2 gap-3">
         @for (p of platforms; track p.name) {
           <label
-            class="flex cursor-pointer items-center gap-3 rounded-lg border px-4 py-3 text-sm font-medium"
-            [class]="p.selected ? 'border-emerald-500 bg-emerald-50 text-emerald-800' : 'border-slate-200 text-slate-700'"
+            class="flex items-center gap-3 rounded-lg border px-4 py-3 text-sm font-medium"
+            [class]="!isConnected(p.name) ? 'cursor-not-allowed border-slate-200 bg-slate-50 text-slate-400' : p.selected ? 'cursor-pointer border-emerald-500 bg-emerald-50 text-emerald-800' : 'cursor-pointer border-slate-200 text-slate-700'"
           >
-            <input type="checkbox" [(ngModel)]="p.selected" class="accent-emerald-600" />
+            <input type="checkbox" [(ngModel)]="p.selected" [disabled]="!isConnected(p.name)" class="accent-emerald-600" />
             {{ p.name }}
           </label>
         }
       </div>
-      <p class="mt-2 text-xs text-slate-500">You can only publish to accounts you have connected.</p>
+      <p class="mt-2 text-xs text-slate-500">
+        Greyed-out platforms are not connected yet.
+        <a routerLink="/app/accounts" class="font-semibold text-emerald-700 hover:underline">Connect accounts</a>
+      </p>
 
       <p class="mt-6 text-sm font-semibold text-slate-800">When should it go out?</p>
       <div class="mt-2 flex gap-6 text-sm text-slate-700">
