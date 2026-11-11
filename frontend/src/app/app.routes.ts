@@ -1,13 +1,17 @@
+import { inject } from '@angular/core';
 import { Routes } from '@angular/router';
+import { authGuard, subscribedGuard } from './guards/auth.guard';
+import { AuthService } from './services/auth.service';
 import { Home } from './pages/home/home';
 import { Signin } from './pages/signin/signin';
 import { Signup } from './pages/signup/signup';
 import { Shell } from './layout/shell/shell';
+import { Demo } from './pages/demo/demo';
+import { Upgrade } from './pages/upgrade/upgrade';
 import { Create } from './pages/create/create';
 import { Posts } from './pages/posts/posts';
-import { Dashboard } from './pages/dashboard/dashboard';
 import { Accounts } from './pages/accounts/accounts';
-
+import { Dashboard } from './pages/dashboard/dashboard';
 
 export const routes: Routes = [
   { path: '', component: Home },
@@ -16,12 +20,15 @@ export const routes: Routes = [
   {
     path: 'app',
     component: Shell,
+    canActivate: [authGuard],
     children: [
-      { path: '', redirectTo: 'create', pathMatch: 'full' },
-      { path: 'create', component: Create },
-      { path: 'posts', component: Posts },
-      { path: 'accounts', component: Accounts },
-      { path: 'dashboard', component: Dashboard },
+      { path: '', redirectTo: () => (inject(AuthService).isSubscribed() ? 'create' : 'demo'), pathMatch: 'full' },
+      { path: 'demo', component: Demo },
+      { path: 'upgrade', component: Upgrade },
+      { path: 'create', component: Create, canActivate: [subscribedGuard] },
+      { path: 'posts', component: Posts, canActivate: [subscribedGuard] },
+      { path: 'accounts', component: Accounts, canActivate: [subscribedGuard] },
+      { path: 'dashboard', component: Dashboard, canActivate: [subscribedGuard] },
     ],
   },
   { path: '**', redirectTo: '' },

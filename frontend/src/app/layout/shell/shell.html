@@ -6,21 +6,27 @@
         <a
           [routerLink]="link.path"
           routerLinkActive="bg-emerald-50 text-emerald-700"
-          class="block rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100"
+          class="flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100"
         >
           {{ link.label }}
+          @if (link.paidOnly && !auth.isSubscribed()) {
+            <span class="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold uppercase text-slate-500">Locked</span>
+          }
         </a>
       }
     </nav>
-    <a routerLink="/signin" class="text-sm font-medium text-slate-500 hover:text-emerald-700">Log out</a>
+    <button (click)="logout()" class="text-left text-sm font-medium text-slate-500 hover:text-emerald-700">Log out</button>
   </aside>
 
   <div class="flex-1 flex flex-col">
     <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6">
-      <span class="text-sm text-slate-500">Welcome back</span>
+      <span class="text-sm text-slate-500">Welcome, {{ auth.user()?.name }}</span>
       <div class="flex items-center gap-3">
-        <span class="text-xs font-medium rounded-full bg-amber-100 text-amber-800 px-3 py-1">Free plan</span>
-        <div class="h-9 w-9 rounded-full bg-emerald-600 text-white flex items-center justify-center text-sm font-semibold">A</div>
+        <span
+          class="text-xs font-medium rounded-full px-3 py-1"
+          [class]="auth.isSubscribed() ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'"
+        >{{ planLabel }}</span>
+        <div class="h-9 w-9 rounded-full bg-emerald-600 text-white flex items-center justify-center text-sm font-semibold">{{ initial }}</div>
       </div>
     </header>
 

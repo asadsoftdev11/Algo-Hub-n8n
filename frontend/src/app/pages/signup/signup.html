@@ -38,6 +38,9 @@
           <input name="agree" type="checkbox" required [(ngModel)]="agree" class="mt-1 accent-emerald-600" />
           I agree to the Terms and Privacy Policy.
         </label>
+          @if (errorMessage()) {
+          <p class="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{{ errorMessage() }}</p>
+        }
         <button type="submit" [disabled]="f.invalid || mismatch"
           class="w-full rounded-lg bg-emerald-600 py-2.5 font-semibold text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50">
           Create account

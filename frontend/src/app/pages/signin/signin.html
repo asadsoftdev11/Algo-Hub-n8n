@@ -16,6 +16,9 @@
           <input name="password" type="password" required [(ngModel)]="password" placeholder="Your password"
             class="w-full rounded-lg border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
         </div>
+          @if (errorMessage()) {
+          <p class="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{{ errorMessage() }}</p>
+        }
         <button type="submit" [disabled]="f.invalid"
           class="w-full rounded-lg bg-emerald-600 py-2.5 font-semibold text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50">
           Sign in
