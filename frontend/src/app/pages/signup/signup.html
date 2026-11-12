@@ -36,7 +36,12 @@
         </div>
         <label class="flex items-start gap-2 text-sm text-slate-600">
           <input name="agree" type="checkbox" required [(ngModel)]="agree" class="mt-1 accent-emerald-600" />
-          I agree to the Terms and Privacy Policy.
+                   <span>
+            I agree to the
+            <a routerLink="/terms" target="_blank" class="font-semibold text-emerald-700 hover:underline">Terms</a>
+            and
+            <a routerLink="/privacy" target="_blank" class="font-semibold text-emerald-700 hover:underline">Privacy Policy</a>.
+          </span>
         </label>
           @if (errorMessage()) {
           <p class="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{{ errorMessage() }}</p>

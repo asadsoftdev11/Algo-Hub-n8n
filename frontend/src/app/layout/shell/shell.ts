@@ -18,6 +18,7 @@ export class Shell {
     { label: 'Accounts', path: '/app/accounts', paidOnly: true },
     { label: 'Dashboard', path: '/app/dashboard', paidOnly: true },
     { label: 'Plans', path: '/app/upgrade', paidOnly: false },
+    { label: 'Settings', path: '/app/settings', paidOnly: false },
   ];
 
   get initial() {

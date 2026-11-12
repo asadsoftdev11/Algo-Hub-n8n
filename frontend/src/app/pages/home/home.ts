@@ -34,8 +34,8 @@ export class Home {
   ];
 
   plans = [
-    { name: 'Starter', price: '$0', popular: false, features: ['5 posts per month', '1 platform', 'Basic support'] },
-    { name: 'Pro', price: '$29', popular: true, features: ['60 posts per month', 'All platforms', 'Post scheduling', 'Priority support'] },
-    { name: 'Agency', price: '$79', popular: false, features: ['Unlimited posts', 'All platforms', 'Team members', 'Dedicated support'] },
+    { name: 'Starter', price: '$9', popular: false, features: ['5 posts per month', '1 platform', 'Basic support'] },
+    { name: 'Pro', price: '$19', popular: true, features: ['60 posts per month', 'All platforms', 'Post scheduling', 'Priority support'] },
+    { name: 'Agency', price: '$49', popular: false, features: ['Unlimited posts', 'All platforms', 'Team members', 'Dedicated support'] },
   ];
 }

@@ -36,7 +36,13 @@ export class AuthService {
     localStorage.setItem(PLANS_KEY, JSON.stringify(plans));
     this.startSession({ ...current, plan });
   }
+    async updateName(name: string): Promise<void> {
+    const current = this.user();
+    if (!current || !name) return;
+    this.startSession({ ...current, name });
+  }
 
+  async requestDataDeletion(): Promise<void> {}
   signOut(): void {
     localStorage.removeItem(SESSION_KEY);
     this.user.set(null);
