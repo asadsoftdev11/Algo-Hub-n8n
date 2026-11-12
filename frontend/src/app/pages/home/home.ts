@@ -38,4 +38,5 @@ export class Home {
     { name: 'Pro', price: '$19', popular: true, features: ['60 posts per month', 'All platforms', 'Post scheduling', 'Priority support'] },
     { name: 'Agency', price: '$49', popular: false, features: ['Unlimited posts', 'All platforms', 'Team members', 'Dedicated support'] },
   ];
+    marquee = Array.from({ length: 8 }, () => this.platforms).flat();
 }

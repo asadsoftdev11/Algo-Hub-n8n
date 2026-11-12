@@ -15,6 +15,7 @@ import { Create } from './pages/create/create';
 import { Posts } from './pages/posts/posts';
 import { Accounts } from './pages/accounts/accounts';
 import { Dashboard } from './pages/dashboard/dashboard';
+import { Contact } from './pages/contact/contact';
 
 export const routes: Routes = [
   { path: '', component: Home, title: 'AutoSocial AI' },
@@ -22,6 +23,7 @@ export const routes: Routes = [
   { path: 'signup', component: Signup, title: 'Create account - AutoSocial AI' },
   { path: 'privacy', component: Legal, data: { doc: 'privacy' }, title: 'Privacy Policy - AutoSocial AI' },
   { path: 'terms', component: Legal, data: { doc: 'terms' }, title: 'Terms of Service - AutoSocial AI' },
+  { path: 'contact', component: Contact, data: { embedded: false }, title: 'Contact - AutoSocial AI' },
   {
     path: 'app',
     component: Shell,
@@ -31,6 +33,7 @@ export const routes: Routes = [
       { path: 'demo', component: Demo, title: 'Demo - AutoSocial AI' },
       { path: 'upgrade', component: Upgrade, title: 'Plans - AutoSocial AI' },
       { path: 'settings', component: Settings, title: 'Settings - AutoSocial AI' },
+      { path: 'support', component: Contact, data: { embedded: true }, title: 'Help and support - AutoSocial AI' },
       { path: 'create', component: Create, canActivate: [subscribedGuard], title: 'Create post - AutoSocial AI' },
       { path: 'posts', component: Posts, canActivate: [subscribedGuard], title: 'Posts - AutoSocial AI' },
       { path: 'accounts', component: Accounts, canActivate: [subscribedGuard], title: 'Accounts - AutoSocial AI' },

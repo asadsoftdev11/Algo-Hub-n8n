@@ -1,1 +1,30 @@
 @import "tailwindcss";
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.float-slow { animation: float-slow 6s ease-in-out infinite; }
+.fade-up { animation: fade-up 0.7s ease-out both; }
+.marquee-track { display: flex; width: max-content; animation: marquee 40s linear infinite; }
+.gradient-animated { background-size: 200% 200%; animation: gradient-shift 10s ease infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .float-slow, .fade-up, .marquee-track, .gradient-animated { animation: none; }
+}

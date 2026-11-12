@@ -1,4 +1,11 @@
 <div class="mx-auto max-w-4xl">
+    <div class="gradient-animated fade-up mb-6 rounded-2xl bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 p-6 text-white">
+    <p class="text-xs font-semibold uppercase tracking-wide text-emerald-100">Welcome to AutoSocial AI</p>
+    <p class="mt-1 text-xl font-bold">Write once. Review it. Publish on schedule.</p>
+    @if (!auth.isSubscribed()) {
+      <p class="mt-1 text-sm text-emerald-50">Watch the demo below, then pick a plan to start publishing.</p>
+    }
+  </div>
   <h2 class="text-2xl font-bold text-slate-900">See how AutoSocial AI works</h2>
   <p class="mt-1 text-sm text-slate-500">Watch the short walkthrough to see the full process from idea to published post.</p>
 
