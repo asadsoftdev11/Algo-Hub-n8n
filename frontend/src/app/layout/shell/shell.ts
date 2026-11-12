@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
@@ -10,6 +10,8 @@ import { AuthService } from '../../services/auth.service';
 export class Shell {
   private router = inject(Router);
   auth = inject(AuthService);
+
+  menuOpen = signal(false);
 
   links = [
     { label: 'Demo', path: '/app/demo', paidOnly: false },
@@ -30,7 +32,16 @@ export class Shell {
     return plan === 'trial' ? 'Free trial' : `${plan[0].toUpperCase()}${plan.slice(1)} plan`;
   }
 
+  toggleMenu() {
+    this.menuOpen.update((open) => !open);
+  }
+
+  closeMenu() {
+    this.menuOpen.set(false);
+  }
+
   logout() {
+    this.closeMenu();
     this.auth.signOut();
     this.router.navigate(['/signin']);
   }

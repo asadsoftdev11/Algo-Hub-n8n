@@ -10,6 +10,9 @@ import { AuthService } from '../../services/auth.service';
 export class Demo {
   auth = inject(AuthService);
 
+  // videoUrl = '';
+  videoUrl = 'demo.mp4';
+
   unlocks = [
     { title: 'Create and schedule posts', text: 'Write your idea, review it, and publish now or pick a date, time, and timezone.' },
     { title: 'Connect your accounts', text: 'Link TikTok, LinkedIn, Facebook, and Instagram through each platform’s official login.' },
