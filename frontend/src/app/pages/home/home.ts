@@ -24,20 +24,25 @@ export class Home {
     { title: 'Type one idea', text: 'Write a topic or title in one simple box.' },
     { title: 'AI writes the script', text: 'Gemini turns your idea into ready content.' },
     { title: 'Video is created', text: 'Matching video clips are found and assembled.' },
-    { title: 'Auto published', text: 'Your post goes live on every platform you pick.' },
+    { title: 'Published on schedule', text: 'Your post goes live on the platforms you pick, at the time you choose.' },
   ];
 
   features = [
-    { title: 'No manual work', text: 'No writing, downloading, or uploading. One prompt does it all.' },
+    { title: 'Less manual work', text: 'No separate writing, downloading, and uploading. One idea starts the whole process.' },
     { title: 'Stay consistent', text: 'Keep posting every day without spending hours on it.' },
     { title: 'Made for everyone', text: 'Built for businesses, creators, agencies, and personal brands.' },
   ];
 
-  plans = [
-    { name: 'Starter', price: '$9', popular: false, features: ['5 posts per month', '1 platform', 'Basic support'] },
-    { name: 'Pro', price: '$19', popular: true, features: ['60 posts per month', 'All platforms', 'Post scheduling', 'Priority support'] },
-    { name: 'Agency', price: '$49', popular: false, features: ['Unlimited posts', 'All platforms', 'Team members', 'Dedicated support'] },
+    plans = [
+    { name: 'Starter', price: '$9', popular: false, features: ['1 connected account', 'Limited scheduled posts', 'Email support'] },
+    { name: 'Creator', price: '$19', popular: true, features: ['Several connected accounts', 'Higher post allowance', 'Email support'] },
+    { name: 'Business', price: '$49', popular: false, features: ['More connected accounts', 'Higher usage limits', 'Priority support'] },
   ];
     marquee = Array.from({ length: 8 }, () => this.platforms).flat();
     menuOpen = signal(false);
+      calendar = Array.from({ length: 15 }, (_, i) => ({
+    x: 36 + (i % 5) * 42,
+    y: 82 + Math.floor(i / 5) * 34,
+    active: [2, 6, 11].includes(i),
+  }));
 }

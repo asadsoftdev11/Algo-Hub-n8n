@@ -28,3 +28,11 @@
 @media (prefers-reduced-motion: reduce) {
   .float-slow, .fade-up, .marquee-track, .gradient-animated { animation: none; }
 }
+html { scroll-behavior: smooth; }
+section[id] { scroll-margin-top: 4rem; }
+main > * { animation: fade-up 0.35s ease-out both; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  main > * { animation: none; }
+}
