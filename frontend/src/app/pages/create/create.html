@@ -21,7 +21,7 @@
     }
   </ol>
 
-  <div class="mt-6 rounded-2xl border border-slate-200 bg-white p-6">
+  <div class="mt-6 rounded-xl border border-slate-200 bg-white p-6">
 
     @if (step() === 'form') {
       <label class="block text-sm font-semibold text-slate-800">Your idea or title</label>
@@ -96,7 +96,7 @@
       <button
         (click)="goToReview()"
         [disabled]="!isValid"
-        class="mt-8 w-full rounded-lg bg-emerald-600 py-3 font-semibold text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
+        class="mt-8 w-full rounded-lg bg-emerald-600 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
       >
         Review post
       </button>
@@ -139,10 +139,10 @@
       }
 
       <div class="mt-6 flex gap-3">
-        <button (click)="backToEdit()" class="rounded-lg border border-slate-300 px-5 py-3 font-semibold text-slate-700 hover:bg-slate-50">
+        <button (click)="backToEdit()" class="rounded-lg border border-slate-300 px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">
           Back to edit
         </button>
-        <button (click)="confirm()" class="flex-1 rounded-lg bg-emerald-600 py-3 font-semibold text-white hover:bg-emerald-700">
+        <button (click)="confirm()" class="flex-1 rounded-lg bg-emerald-600 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700">
           {{ publishMode === 'now' ? 'Confirm and publish' : 'Confirm and schedule' }}
         </button>
       </div>

@@ -3,6 +3,8 @@ import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/rou
 import { AuthService } from '../../services/auth.service';
 import { PostsService } from '../../services/posts.service';
 
+const COLLAPSE_KEY = 'autosocial_sidebar_collapsed';
+
 @Component({
   selector: 'app-shell',
   imports: [RouterOutlet, RouterLink, RouterLinkActive],
@@ -15,6 +17,7 @@ export class Shell {
 
   menuOpen = signal(false);
   userMenuOpen = signal(false);
+  collapsed = signal(this.readCollapsed());
 
   failedCount = computed(() => this.postsService.posts().filter((p) => p.status === 'Failed').length);
 
@@ -52,6 +55,13 @@ export class Shell {
     return this.planKey === 'trial' ? 'Free trial' : `${this.planKey[0].toUpperCase()}${this.planKey.slice(1)} plan`;
   }
 
+  toggleSidebar() {
+    this.collapsed.update((value) => !value);
+    try {
+      localStorage.setItem(COLLAPSE_KEY, String(this.collapsed()));
+    } catch {}
+  }
+
   toggleMenu() {
     this.menuOpen.update((open) => !open);
   }
@@ -73,5 +83,13 @@ export class Shell {
     this.closeUserMenu();
     this.auth.signOut();
     this.router.navigate(['/signin']);
+  }
+
+  private readCollapsed() {
+    try {
+      return localStorage.getItem(COLLAPSE_KEY) === 'true';
+    } catch {
+      return false;
+    }
   }
 }

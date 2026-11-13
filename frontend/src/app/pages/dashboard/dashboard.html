@@ -11,7 +11,7 @@
 
   <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
     @for (s of stats(); track s.label) {
-      <div class="rounded-2xl border-t-4 bg-white p-5 shadow-sm ring-1 ring-slate-200" [class]="s.accent">
+      <div class="rounded-xl border-t-4 bg-white p-5 shadow-sm ring-1 ring-slate-200" [class]="s.accent">
         <p class="text-sm text-slate-500">{{ s.label }}</p>
         <p class="mt-2 text-3xl font-extrabold text-slate-900" [appCountUp]="s.value">0</p>
         <p class="mt-1 text-xs text-slate-500">{{ s.note }}</p>
@@ -19,7 +19,7 @@
     }
   </div>
 
-  <div class="mt-6 rounded-2xl border border-slate-200 bg-white p-5">
+  <div class="mt-6 rounded-xl border border-slate-200 bg-white p-5">
     <div class="flex items-center justify-between">
       <p class="font-semibold text-slate-900">Connected accounts</p>
       <a routerLink="/app/accounts" class="text-sm font-semibold text-emerald-700 hover:underline">Manage</a>
@@ -34,7 +34,7 @@
     </div>
   </div>
 
-  <div class="mt-6 rounded-2xl border border-slate-200 bg-white">
+  <div class="mt-6 rounded-xl border border-slate-200 bg-white">
     <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4">
       <p class="font-semibold text-slate-900">Recent activity</p>
       <a routerLink="/app/posts" class="text-sm font-semibold text-emerald-700 hover:underline">View all posts</a>

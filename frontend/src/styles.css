@@ -1,7 +1,11 @@
 @import "tailwindcss";
+@theme {
+  --color-accent-200: #e6ee9c;
+  --color-accent-300: #d4e157;
+}
 @keyframes float-slow {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-12px); }
+  50% {   transform: translateY(-6px); }
 }
 
 @keyframes fade-up {

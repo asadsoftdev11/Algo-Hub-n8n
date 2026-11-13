@@ -2,13 +2,13 @@
   <h2 class="text-2xl font-bold text-slate-900">Settings</h2>
   <p class="mt-1 text-sm text-slate-500">Manage your profile, email, password, plan, and data.</p>
 
-  <div class="mt-6 rounded-2xl border border-slate-200 bg-white p-6">
+  <div class="mt-6 rounded-xl border border-slate-200 bg-white p-6">
     <p class="font-semibold text-slate-900">Profile</p>
     <div class="mt-4 flex items-center gap-4">
       @if (avatar) {
         <img [src]="avatar" alt="Your profile photo" class="h-16 w-16 rounded-full object-cover ring-2 ring-emerald-100" />
       } @else {
-        <div class="flex h-16 w-16 items-center justify-center rounded-full bg-lime-300 text-xl font-bold text-emerald-900">{{ (name || 'U')[0].toUpperCase() }}</div>
+        <div class="flex h-16 w-16 items-center justify-center rounded-full bg-accent-300 text-xl font-bold text-emerald-900">{{ (name || 'U')[0].toUpperCase() }}</div>
       }
       <div>
         <label class="cursor-pointer rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">
@@ -56,7 +56,7 @@
     </div>
   </div>
 
-  <div class="mt-6 rounded-2xl border border-slate-200 bg-white p-6">
+  <div class="mt-6 rounded-xl border border-slate-200 bg-white p-6">
     <p class="font-semibold text-slate-900">Email address</p>
     <p class="mt-1 text-sm text-slate-500">Your current email is {{ auth.user()?.email }}.</p>
     <form (ngSubmit)="changeEmail()" class="mt-4 space-y-4">
@@ -85,7 +85,7 @@
     </form>
   </div>
 
-  <div class="mt-6 rounded-2xl border border-slate-200 bg-white p-6">
+  <div class="mt-6 rounded-xl border border-slate-200 bg-white p-6">
     <p class="font-semibold text-slate-900">Change password</p>
     <form (ngSubmit)="changePassword()" class="mt-4 space-y-4">
       <div>
@@ -121,7 +121,7 @@
     </form>
   </div>
 
-  <div class="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-6">
+  <div class="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-slate-200 bg-white p-6">
     <div>
       <p class="font-semibold text-slate-900">Plan</p>
       <p class="mt-1 text-sm text-slate-500">You are on the {{ planLabel }}.</p>
@@ -131,7 +131,7 @@
     </a>
   </div>
 
-  <div class="mt-6 rounded-2xl border border-slate-200 bg-white p-6">
+  <div class="mt-6 rounded-xl border border-slate-200 bg-white p-6">
     <p class="font-semibold text-slate-900">Your data</p>
     <p class="mt-1 text-sm text-slate-500">
       Read how we use your information in the
