@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AccountsService } from '../../services/accounts.service';
 import { Platform, PostRequest, PostsService, PublishMode } from '../../services/posts.service';
+import { AuthService } from '../../services/auth.service';
 
 type Step = 'form' | 'review' | 'progress' | 'done';
 
@@ -14,6 +15,7 @@ type Step = 'form' | 'review' | 'progress' | 'done';
 export class Create {
   private postsService = inject(PostsService);
   private accountsService = inject(AccountsService);
+  private auth = inject(AuthService);
 
   readonly stepLabels = ['Create', 'Review', 'Publish'];
   readonly today = new Date().toISOString().slice(0, 10);
@@ -24,7 +26,7 @@ export class Create {
   publishMode: PublishMode = 'now';
   scheduleDate = '';
   scheduleTime = '';
-  timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  timezone = this.auth.user()?.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   platforms: { name: Platform; selected: boolean }[] = [
     { name: 'TikTok', selected: false },

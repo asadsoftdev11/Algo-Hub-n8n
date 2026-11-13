@@ -27,10 +27,10 @@ export class Signup {
   async submit() {
     this.errorMessage.set('');
     try {
-      await this.auth.signUp(this.fullName.trim(), this.email.trim(), this.password);
+      await this.auth.signUp(this.fullName.trim(), this.email.trim(), this.password, this.company.trim());
       this.router.navigate(['/app/demo']);
     } catch {
-      this.errorMessage.set('We could not create your account. Please try again.');
+      this.errorMessage.set('We could not create your account. If you already have one, try signing in instead.');
     }
   }
 }

@@ -11,8 +11,24 @@ import { AuthService } from '../../services/auth.service';
 export class Settings {
   auth = inject(AuthService);
 
+  readonly timezones = Intl.supportedValuesOf('timeZone');
+
   name = this.auth.user()?.name ?? '';
-  saved = signal(false);
+  company = this.auth.user()?.company ?? '';
+  timezone = this.auth.user()?.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  newEmail = '';
+  emailPassword = '';
+
+  currentPassword = '';
+  newPassword = '';
+  confirmPassword = '';
+
+  profileSaved = signal(false);
+  emailChanged = signal(false);
+  emailError = signal('');
+  passwordChanged = signal(false);
+  passwordError = signal('');
   deletionRequested = signal(false);
 
   get planLabel() {
@@ -20,9 +36,52 @@ export class Settings {
     return plan === 'trial' ? 'Free trial' : `${plan[0].toUpperCase()}${plan.slice(1)} plan`;
   }
 
-  async saveName() {
-    await this.auth.updateName(this.name.trim());
-    this.saved.set(true);
+  get canChangeEmail() {
+    return this.newEmail.includes('@') && this.emailPassword !== '';
+  }
+
+  get passwordMismatch() {
+    return this.confirmPassword !== '' && this.newPassword !== this.confirmPassword;
+  }
+
+  get canChangePassword() {
+    return this.currentPassword !== '' && this.newPassword.length >= 8 && this.confirmPassword !== '' && !this.passwordMismatch;
+  }
+
+  async saveProfile() {
+    await this.auth.updateProfile({
+      name: this.name.trim(),
+      company: this.company.trim(),
+      timezone: this.timezone,
+    });
+    this.profileSaved.set(true);
+  }
+
+  async changeEmail() {
+    this.emailError.set('');
+    this.emailChanged.set(false);
+    try {
+      await this.auth.changeEmail(this.newEmail, this.emailPassword);
+      this.newEmail = '';
+      this.emailPassword = '';
+      this.emailChanged.set(true);
+    } catch {
+      this.emailError.set('We could not change your email. Check your password, and make sure the new address is not already in use.');
+    }
+  }
+
+  async changePassword() {
+    this.passwordError.set('');
+    this.passwordChanged.set(false);
+    try {
+      await this.auth.changePassword(this.currentPassword, this.newPassword);
+      this.currentPassword = '';
+      this.newPassword = '';
+      this.confirmPassword = '';
+      this.passwordChanged.set(true);
+    } catch {
+      this.passwordError.set('Your current password is not correct. Please try again.');
+    }
   }
 
   async requestDeletion() {

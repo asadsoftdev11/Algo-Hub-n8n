@@ -1,41 +1,104 @@
 <div class="mx-auto max-w-3xl">
   <h2 class="text-2xl font-bold text-slate-900">Settings</h2>
-  <p class="mt-1 text-sm text-slate-500">Manage your profile, plan, and data.</p>
+  <p class="mt-1 text-sm text-slate-500">Manage your profile, email, password, plan, and data.</p>
 
   <div class="mt-6 rounded-2xl border border-slate-200 bg-white p-6">
     <p class="font-semibold text-slate-900">Profile</p>
     <div class="mt-4 space-y-4">
       <div>
         <label class="mb-1 block text-sm font-medium text-slate-700">Name</label>
-        <input
-          type="text"
-          [(ngModel)]="name"
-          (ngModelChange)="saved.set(false)"
-          class="w-full rounded-lg border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-        />
+        <input type="text" [(ngModel)]="name" (ngModelChange)="profileSaved.set(false)"
+          class="w-full rounded-lg border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
       </div>
       <div>
-        <label class="mb-1 block text-sm font-medium text-slate-700">Email</label>
-        <input
-          type="email"
-          [value]="auth.user()?.email"
-          disabled
-          class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-slate-500"
-        />
+        <label class="mb-1 block text-sm font-medium text-slate-700">Business or brand</label>
+        <input type="text" [(ngModel)]="company" (ngModelChange)="profileSaved.set(false)" placeholder="Optional"
+          class="w-full rounded-lg border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+      </div>
+      <div>
+        <label class="mb-1 block text-sm font-medium text-slate-700">Default timezone for scheduling</label>
+        <select [(ngModel)]="timezone" (ngModelChange)="profileSaved.set(false)"
+          class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2">
+          @for (zone of timezones; track zone) {
+            <option [value]="zone">{{ zone }}</option>
+          }
+        </select>
       </div>
       <div class="flex items-center gap-3">
-        <button
-          (click)="saveName()"
-          [disabled]="name.trim().length < 2"
-          class="rounded-lg bg-emerald-600 px-5 py-2 text-sm font-semibold text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
-        >
+        <button (click)="saveProfile()" [disabled]="name.trim().length < 2"
+          class="rounded-lg bg-emerald-600 px-5 py-2 text-sm font-semibold text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50">
           Save changes
         </button>
-        @if (saved()) {
+        @if (profileSaved()) {
           <span class="text-sm text-emerald-700">Saved.</span>
         }
       </div>
     </div>
+  </div>
+
+  <div class="mt-6 rounded-2xl border border-slate-200 bg-white p-6">
+    <p class="font-semibold text-slate-900">Email address</p>
+    <p class="mt-1 text-sm text-slate-500">Your current email is {{ auth.user()?.email }}.</p>
+    <form (ngSubmit)="changeEmail()" class="mt-4 space-y-4">
+      <div>
+        <label class="mb-1 block text-sm font-medium text-slate-700">New email</label>
+        <input name="newEmail" type="email" autocomplete="email" [(ngModel)]="newEmail" placeholder="new@example.com"
+          class="w-full rounded-lg border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+      </div>
+      <div>
+        <label class="mb-1 block text-sm font-medium text-slate-700">Your password</label>
+        <input name="emailPassword" type="password" autocomplete="current-password" [(ngModel)]="emailPassword"
+          class="w-full rounded-lg border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+      </div>
+      @if (emailError()) {
+        <p class="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{{ emailError() }}</p>
+      }
+      <div class="flex items-center gap-3">
+        <button type="submit" [disabled]="!canChangeEmail"
+          class="rounded-lg bg-emerald-600 px-5 py-2 text-sm font-semibold text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50">
+          Update email
+        </button>
+        @if (emailChanged()) {
+          <span class="text-sm text-emerald-700">Email updated.</span>
+        }
+      </div>
+    </form>
+  </div>
+
+  <div class="mt-6 rounded-2xl border border-slate-200 bg-white p-6">
+    <p class="font-semibold text-slate-900">Change password</p>
+    <form (ngSubmit)="changePassword()" class="mt-4 space-y-4">
+      <div>
+        <label class="mb-1 block text-sm font-medium text-slate-700">Current password</label>
+        <input name="currentPassword" type="password" autocomplete="current-password" [(ngModel)]="currentPassword"
+          class="w-full rounded-lg border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+      </div>
+      <div>
+        <label class="mb-1 block text-sm font-medium text-slate-700">New password</label>
+        <input name="newPassword" type="password" autocomplete="new-password" [(ngModel)]="newPassword" placeholder="At least 8 characters"
+          class="w-full rounded-lg border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+      </div>
+      <div>
+        <label class="mb-1 block text-sm font-medium text-slate-700">Confirm new password</label>
+        <input name="confirmPassword" type="password" autocomplete="new-password" [(ngModel)]="confirmPassword"
+          class="w-full rounded-lg border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+        @if (passwordMismatch) {
+          <p class="mt-1 text-xs text-red-600">Passwords do not match.</p>
+        }
+      </div>
+      @if (passwordError()) {
+        <p class="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{{ passwordError() }}</p>
+      }
+      <div class="flex items-center gap-3">
+        <button type="submit" [disabled]="!canChangePassword"
+          class="rounded-lg bg-emerald-600 px-5 py-2 text-sm font-semibold text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50">
+          Update password
+        </button>
+        @if (passwordChanged()) {
+          <span class="text-sm text-emerald-700">Password updated.</span>
+        }
+      </div>
+    </form>
   </div>
 
   <div class="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-6">
@@ -56,16 +119,10 @@
       To stop us publishing to an account, disconnect it on the
       <a routerLink="/app/accounts" class="font-semibold text-emerald-700 hover:underline">Accounts</a> page.
     </p>
-
     @if (deletionRequested()) {
-      <p class="mt-4 rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-        Your deletion request has been received.
-      </p>
+      <p class="mt-4 rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-800">Your deletion request has been received.</p>
     } @else {
-      <button
-        (click)="requestDeletion()"
-        class="mt-4 rounded-lg border border-red-300 px-4 py-2 text-sm font-semibold text-red-700 hover:bg-red-50"
-      >
+      <button (click)="requestDeletion()" class="mt-4 rounded-lg border border-red-300 px-4 py-2 text-sm font-semibold text-red-700 hover:bg-red-50">
         Request account and data deletion
       </button>
     }

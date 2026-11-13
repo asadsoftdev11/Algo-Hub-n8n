@@ -5,6 +5,7 @@ import { AuthService } from './services/auth.service';
 import { Home } from './pages/home/home';
 import { Signin } from './pages/signin/signin';
 import { Signup } from './pages/signup/signup';
+import { ForgotPassword } from './pages/forgot-password/forgot-password';
 import { Legal } from './pages/legal/legal';
 import { NotFound } from './pages/not-found/not-found';
 import { Shell } from './layout/shell/shell';
@@ -21,6 +22,7 @@ export const routes: Routes = [
   { path: '', component: Home, title: 'AutoSocial AI' },
   { path: 'signin', component: Signin, title: 'Sign in - AutoSocial AI' },
   { path: 'signup', component: Signup, title: 'Create account - AutoSocial AI' },
+  { path: 'forgot-password', component: ForgotPassword, title: 'Reset password - AutoSocial AI' },
   { path: 'privacy', component: Legal, data: { doc: 'privacy' }, title: 'Privacy Policy - AutoSocial AI' },
   { path: 'terms', component: Legal, data: { doc: 'terms' }, title: 'Terms of Service - AutoSocial AI' },
   { path: 'contact', component: Contact, data: { embedded: false }, title: 'Contact - AutoSocial AI' },

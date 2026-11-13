@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { AccountsService } from '../../services/accounts.service';
+import { PostStatus, PostsService } from '../../services/posts.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -7,31 +9,34 @@ import { RouterLink } from '@angular/router';
   templateUrl: './dashboard.html',
 })
 export class Dashboard {
-  stats = [
-    { label: 'Videos created', value: 24, note: '6 more than last week' },
-    { label: 'Published', value: 19, note: 'Live on your accounts' },
-    { label: 'Scheduled', value: 3, note: 'Going out soon' },
-    { label: 'Failed', value: 2, note: 'Need your attention' },
-  ];
+  private postsService = inject(PostsService);
+  private accountsService = inject(AccountsService);
 
-  usage = { used: 24, limit: 60 };
+  accounts = this.accountsService.accounts;
+  recent = computed(() => this.postsService.posts().slice(0, 5));
 
-  get usagePercent() {
-    return Math.round((this.usage.used / this.usage.limit) * 100);
-  }
+     stats = computed(() => {
+    const posts = this.postsService.posts();
+    const countOf = (status: PostStatus) => posts.filter((p) => p.status === status).length;
+    return [
+      { label: 'Total posts', value: posts.length, note: 'All posts you have created', accent: 'border-t-slate-700' },
+      { label: 'Published', value: countOf('Published'), note: 'Live on your accounts', accent: 'border-t-emerald-500' },
+      { label: 'Scheduled', value: countOf('Scheduled'), note: 'Going out later', accent: 'border-t-sky-500' },
+      { label: 'Needs attention', value: countOf('Failed'), note: 'Failed posts you can retry', accent: 'border-t-red-500' },
+    ];
+  });
 
-  activity = [
-    { title: '5 daily habits for a productive morning', platforms: ['TikTok', 'Instagram'], status: 'Processing', date: 'Nov 4, 2026' },
-    { title: 'How to start a small online business', platforms: ['LinkedIn', 'Facebook'], status: 'Scheduled', date: 'Nov 4, 2026' },
-    { title: 'Three tips for better customer service', platforms: ['TikTok'], status: 'Published', date: 'Nov 3, 2026' },
-    { title: 'Why consistency wins on social media', platforms: ['LinkedIn', 'Facebook', 'Instagram'], status: 'Published', date: 'Nov 2, 2026' },
-    { title: 'Quick guide to budgeting for beginners', platforms: ['TikTok', 'Facebook'], status: 'Failed', date: 'Nov 1, 2026' },
-  ];
-
-  statusStyle: Record<string, string> = {
-    Published: 'bg-emerald-100 text-emerald-800',
+  statusStyle: Record<PostStatus, string> = {
+    Draft: 'bg-slate-100 text-slate-700',
     Scheduled: 'bg-sky-100 text-sky-800',
     Processing: 'bg-amber-100 text-amber-800',
+    Published: 'bg-emerald-100 text-emerald-800',
     Failed: 'bg-red-100 text-red-700',
+  };
+
+  accountStyle = {
+    Connected: 'bg-emerald-100 text-emerald-800',
+    'Not connected': 'bg-slate-100 text-slate-600',
+    Expired: 'bg-amber-100 text-amber-800',
   };
 }

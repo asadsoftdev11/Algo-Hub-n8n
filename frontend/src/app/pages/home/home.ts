@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 @Component({
@@ -39,4 +39,5 @@ export class Home {
     { name: 'Agency', price: '$49', popular: false, features: ['Unlimited posts', 'All platforms', 'Team members', 'Dedicated support'] },
   ];
     marquee = Array.from({ length: 8 }, () => this.platforms).flat();
+    menuOpen = signal(false);
 }
