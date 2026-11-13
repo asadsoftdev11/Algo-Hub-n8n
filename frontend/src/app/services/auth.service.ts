@@ -6,6 +6,7 @@ export type Plan = 'trial' | PaidPlan;
 export interface Profile {
   name: string;
   company: string;
+  avatar: string;
   timezone: string;
 }
 
@@ -41,7 +42,7 @@ export class AuthService {
       passwordHash: await this.hash(password, tenantId),
       tenantId,
       plan: 'trial',
-      profile: { name, company, timezone: this.defaultTimezone() },
+      profile: { name, company, avatar: '', timezone: this.defaultTimezone() },
     };
     this.saveAccount(key, account);
     this.startSession(key, account);

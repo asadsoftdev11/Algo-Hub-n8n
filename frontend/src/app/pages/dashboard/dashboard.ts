@@ -1,11 +1,12 @@
 import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { CountUp } from '../../shared/count-up.directive';
 import { AccountsService } from '../../services/accounts.service';
 import { PostStatus, PostsService } from '../../services/posts.service';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [RouterLink],
+  imports: [RouterLink, CountUp],
   templateUrl: './dashboard.html',
 })
 export class Dashboard {

@@ -1,6 +1,7 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { PostsService } from '../../services/posts.service';
 
 @Component({
   selector: 'app-shell',
@@ -9,11 +10,22 @@ import { AuthService } from '../../services/auth.service';
 })
 export class Shell {
   private router = inject(Router);
+  private postsService = inject(PostsService);
   auth = inject(AuthService);
 
   menuOpen = signal(false);
+  userMenuOpen = signal(false);
 
-   links = [
+  failedCount = computed(() => this.postsService.posts().filter((p) => p.status === 'Failed').length);
+
+  readonly planStyles: Record<string, string> = {
+    trial: 'bg-amber-100 text-amber-800',
+    starter: 'bg-sky-100 text-sky-800',
+    creator: 'bg-emerald-100 text-emerald-800',
+    business: 'bg-violet-100 text-violet-800',
+  };
+
+  links = [
     { label: 'Demo', path: '/app/demo', paidOnly: false, icon: 'M12 2a10 10 0 100 20 10 10 0 000-20z M10 8l6 4-6 4z' },
     { label: 'Create post', path: '/app/create', paidOnly: true, icon: 'M12 5v14M5 12h14' },
     { label: 'Posts', path: '/app/posts', paidOnly: true, icon: 'M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01' },
@@ -24,13 +36,20 @@ export class Shell {
     { label: 'Help and support', path: '/app/support', paidOnly: false, icon: 'M12 22a10 10 0 100-20 10 10 0 000 20zM9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01' },
   ];
 
+  get avatar() {
+    return this.auth.user()?.avatar ?? '';
+  }
+
   get initial() {
     return (this.auth.user()?.name ?? 'U')[0].toUpperCase();
   }
 
+  get planKey() {
+    return this.auth.user()?.plan ?? 'trial';
+  }
+
   get planLabel() {
-    const plan = this.auth.user()?.plan ?? 'trial';
-    return plan === 'trial' ? 'Free trial' : `${plan[0].toUpperCase()}${plan.slice(1)} plan`;
+    return this.planKey === 'trial' ? 'Free trial' : `${this.planKey[0].toUpperCase()}${this.planKey.slice(1)} plan`;
   }
 
   toggleMenu() {
@@ -41,8 +60,17 @@ export class Shell {
     this.menuOpen.set(false);
   }
 
+  toggleUserMenu() {
+    this.userMenuOpen.update((open) => !open);
+  }
+
+  closeUserMenu() {
+    this.userMenuOpen.set(false);
+  }
+
   logout() {
     this.closeMenu();
+    this.closeUserMenu();
     this.auth.signOut();
     this.router.navigate(['/signin']);
   }

@@ -13,7 +13,7 @@
     @for (s of stats(); track s.label) {
       <div class="rounded-2xl border-t-4 bg-white p-5 shadow-sm ring-1 ring-slate-200" [class]="s.accent">
         <p class="text-sm text-slate-500">{{ s.label }}</p>
-        <p class="mt-2 text-3xl font-extrabold text-slate-900">{{ s.value }}</p>
+        <p class="mt-2 text-3xl font-extrabold text-slate-900" [appCountUp]="s.value">0</p>
         <p class="mt-1 text-xs text-slate-500">{{ s.note }}</p>
       </div>
     }

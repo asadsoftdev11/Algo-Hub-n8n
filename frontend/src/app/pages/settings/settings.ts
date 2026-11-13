@@ -16,6 +16,8 @@ export class Settings {
   name = this.auth.user()?.name ?? '';
   company = this.auth.user()?.company ?? '';
   timezone = this.auth.user()?.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
+  avatar = this.auth.user()?.avatar ?? '';
+  photoError = signal('');
 
   newEmail = '';
   emailPassword = '';
@@ -48,10 +50,44 @@ export class Settings {
     return this.currentPassword !== '' && this.newPassword.length >= 8 && this.confirmPassword !== '' && !this.passwordMismatch;
   }
 
+    onPhotoSelected(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    this.photoError.set('');
+    if (!file) return;
+    if (!file.type.startsWith('image/') || file.size > 5 * 1024 * 1024) {
+      this.photoError.set('Please choose an image smaller than 5 MB.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      const image = new Image();
+      image.onload = () => {
+        const size = 160;
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        const crop = Math.min(image.width, image.height);
+        const sx = (image.width - crop) / 2;
+        const sy = (image.height - crop) / 2;
+        canvas.getContext('2d')?.drawImage(image, sx, sy, crop, crop, 0, 0, size, size);
+        this.avatar = canvas.toDataURL('image/jpeg', 0.85);
+        this.profileSaved.set(false);
+      };
+      image.src = reader.result as string;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  removePhoto() {
+    this.avatar = '';
+    this.profileSaved.set(false);
+  }
+
   async saveProfile() {
     await this.auth.updateProfile({
       name: this.name.trim(),
       company: this.company.trim(),
+      avatar: this.avatar,
       timezone: this.timezone,
     });
     this.profileSaved.set(true);

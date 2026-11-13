@@ -1,7 +1,7 @@
-<header class="sticky top-0 z-20 border-b border-white/10 bg-emerald-950/95 backdrop-blur">
+<header class="sticky top-0 z-20 border-b border-white/10 bg-emerald-800/95 backdrop-blur">
   <div class="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
     <a routerLink="/" class="flex items-center gap-2 text-lg font-bold text-white">
-      <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-300 text-emerald-950">A</span>
+      <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-lime-300 text-emerald-900">A</span>
       AutoSocial AI
     </a>
     <nav class="hidden items-center gap-1 text-sm font-medium md:flex">
@@ -12,14 +12,14 @@
     </nav>
     <div class="flex items-center gap-3">
       <a routerLink="/signin" class="hidden rounded-lg px-4 py-2 text-sm font-medium text-emerald-50 transition hover:bg-white/10 sm:inline">Sign in</a>
-      <a routerLink="/signup" class="rounded-lg bg-amber-300 px-4 py-2 text-sm font-semibold text-emerald-950 transition hover:bg-amber-200">Get started</a>
+      <a routerLink="/signup" class="rounded-lg bg-lime-300 px-4 py-2 text-sm font-semibold text-emerald-900 transition hover:bg-lime-200">Get started</a>
       <button (click)="menuOpen.set(!menuOpen())" aria-label="Open menu"
         class="rounded-lg border border-white/20 px-3 py-1.5 text-lg leading-none text-white md:hidden">☰</button>
     </div>
   </div>
 
   @if (menuOpen()) {
-    <nav class="space-y-1 border-t border-white/10 bg-emerald-950 px-6 py-3 md:hidden">
+    <nav class="space-y-1 border-t border-white/10 bg-emerald-800 px-6 py-3 md:hidden">
       <a href="#how" (click)="menuOpen.set(false)" class="block rounded-lg px-3 py-2.5 text-sm font-medium text-emerald-50">How it works</a>
       <a href="#features" (click)="menuOpen.set(false)" class="block rounded-lg px-3 py-2.5 text-sm font-medium text-emerald-50">Features</a>
       <a href="#pricing" (click)="menuOpen.set(false)" class="block rounded-lg px-3 py-2.5 text-sm font-medium text-emerald-50">Pricing</a>
@@ -29,29 +29,29 @@
   }
 </header>
 
-<section class="relative overflow-hidden bg-gradient-to-br from-emerald-950 via-emerald-900 to-teal-800">
+<section class="relative overflow-hidden bg-gradient-to-br from-emerald-800 via-emerald-700 to-teal-600">
   <div class="pointer-events-none absolute inset-0 opacity-[0.07]" style="background-image: radial-gradient(#ffffff 1px, transparent 1px); background-size: 24px 24px;"></div>
   <div class="pointer-events-none absolute -top-24 -right-24 h-80 w-80 rounded-full bg-emerald-400/20 blur-3xl"></div>
 
   <div class="relative mx-auto grid max-w-6xl items-center gap-12 px-6 py-20 md:grid-cols-2">
     <div>
-      <span class="inline-block rounded-full bg-amber-300 px-3 py-1 text-xs font-semibold text-emerald-950">AI social media automation</span>
+      <span class="inline-block rounded-full bg-lime-300 px-3 py-1 text-xs font-semibold text-emerald-900">AI social media automation</span>
       <h1 class="fade-up mt-4 text-4xl font-extrabold leading-tight text-white md:text-5xl">
-        One idea, <span class="text-amber-300">published everywhere</span>
+        One idea, <span class="text-lime-300">published everywhere</span>
       </h1>
       <p class="mt-4 text-lg text-emerald-50/90">
         Type one topic. AI writes the script, creates the video, and posts it to your social media on your schedule. You review everything before it goes out.
       </p>
       <div class="mt-8 flex flex-wrap gap-3">
-        <a routerLink="/signup" class="rounded-lg bg-amber-300 px-6 py-3 font-semibold text-emerald-950 transition hover:bg-amber-200">Create your account</a>
+        <a routerLink="/signup" class="rounded-lg bg-lime-300 px-6 py-3 font-semibold text-emerald-900 transition hover:bg-lime-200">Create your account</a>
         <a href="#how" class="rounded-lg border border-white/40 px-6 py-3 font-semibold text-white transition hover:bg-white/10">See how it works</a>
       </div>
       <p class="mt-3 text-xs text-emerald-100/80">A free account includes the demo. Publishing needs a plan.</p>
 
       <ul class="mt-8 grid gap-3 text-sm text-emerald-50 sm:grid-cols-3">
-        <li class="flex items-center gap-2"><span class="text-amber-300">✓</span> Official platform logins</li>
-        <li class="flex items-center gap-2"><span class="text-amber-300">✓</span> You approve every post</li>
-        <li class="flex items-center gap-2"><span class="text-amber-300">✓</span> Schedule with timezone</li>
+        <li class="flex items-center gap-2"><span class="text-lime-300">✓</span> Official platform logins</li>
+        <li class="flex items-center gap-2"><span class="text-lime-300">✓</span> You approve every post</li>
+        <li class="flex items-center gap-2"><span class="text-lime-300">✓</span> Schedule with timezone</li>
       </ul>
     </div>
 
@@ -102,7 +102,7 @@
     <h2 class="text-center text-3xl font-bold text-slate-900">How it works</h2>
     <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
       @for (s of steps; track s.title; let i = $index) {
-        <div class="rounded-2xl border border-slate-200 bg-white p-6 transition duration-200 hover:-translate-y-1 hover:shadow-lg">
+        <div class="rounded-2xl border border-slate-200 bg-white p-6 transition duration-200 reveal hover:-translate-y-1 hover:shadow-lg">
           <div class="h-9 w-9 rounded-full bg-emerald-600 text-white font-bold flex items-center justify-center">{{ i + 1 }}</div>
           <h3 class="mt-4 font-bold text-slate-900">{{ s.title }}</h3>
           <p class="mt-2 text-sm text-slate-600">{{ s.text }}</p>
@@ -116,7 +116,7 @@
   <h2 class="text-center text-3xl font-bold text-slate-900">Why choose AutoSocial AI</h2>
   <div class="mt-10 grid gap-6 md:grid-cols-3">
     @for (f of features; track f.title) {
-      <div class="rounded-2xl border border-slate-200 bg-white p-6 transition duration-200 hover:-translate-y-1 hover:shadow-lg">
+      <div class="rounded-2xl border border-slate-200 bg-white p-6 transition duration-200 reveal hover:-translate-y-1 hover:shadow-lg">
         <h3 class="font-bold text-emerald-700">{{ f.title }}</h3>
         <p class="mt-2 text-sm text-slate-600">{{ f.text }}</p>
       </div>
@@ -129,11 +129,16 @@
     <h2 class="text-center text-3xl font-bold text-slate-900">Simple pricing</h2>
     <div class="mt-10 grid gap-6 md:grid-cols-3">
       @for (p of plans; track p.name) {
-        <div class="flex flex-col rounded-2xl border bg-white p-6 transition duration-200 hover:-translate-y-1 hover:shadow-lg" [class]="p.popular ? 'border-emerald-500 shadow-lg ring-2 ring-emerald-100' : 'border-slate-200'">
+        <div class="flex flex-col rounded-2xl border bg-white p-6 transition duration-200 reveal hover:-translate-y-1 hover:shadow-lg" [class]="p.popular ? 'border-emerald-500 shadow-lg ring-2 ring-emerald-100' : 'border-slate-200'">
           @if (p.popular) {
-            <span class="self-start rounded-full bg-amber-400 px-3 py-1 text-xs font-bold text-amber-950">Most popular</span>
+            <span class="self-start rounded-full bg-lime-300 px-3 py-1 text-xs font-bold text-emerald-900">Most popular</span>
           }
-          <h3 class="mt-3 text-lg font-bold text-slate-900">{{ p.name }}</h3>
+          <div class="mt-3 flex items-center gap-3">
+  <span class="flex h-10 w-10 items-center justify-center rounded-xl" [class]="p.tint">
+    <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path [attr.d]="p.icon" /></svg>
+  </span>
+  <h3 class="text-lg font-bold text-slate-900">{{ p.name }}</h3>
+</div>
           <p class="mt-2">
             <span class="text-4xl font-extrabold text-slate-900">{{ p.price }}</span>
             <span class="text-slate-500"> /month</span>
@@ -152,13 +157,13 @@
 
 <section class="bg-slate-50 py-16">
   <div class="mx-auto max-w-6xl px-6">
-    <div class="overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-950 via-emerald-900 to-teal-800 px-8 py-12 md:px-14">
+    <div class="overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-800 via-emerald-700 to-teal-600 px-8 py-12 md:px-14">
       <div class="grid items-center gap-8 md:grid-cols-2">
         <div>
           <h2 class="text-3xl font-extrabold text-white">Ready to plan your next post?</h2>
           <p class="mt-3 text-emerald-50/90">Create your account, watch the demo, and choose the plan that fits you.</p>
           <div class="mt-6 flex flex-wrap gap-3">
-            <a routerLink="/signup" class="rounded-lg bg-amber-300 px-6 py-3 font-semibold text-emerald-950 transition hover:bg-amber-200">Create your account</a>
+            <a routerLink="/signup" class="rounded-lg bg-lime-300 px-6 py-3 font-semibold text-emerald-900 transition hover:bg-lime-200">Create your account</a>
             <a routerLink="/contact" class="rounded-lg border border-white/40 px-6 py-3 font-semibold text-white transition hover:bg-white/10">Talk to us</a>
           </div>
         </div>
@@ -182,11 +187,11 @@
   </div>
 </section>
 
-<footer class="bg-emerald-950 text-emerald-100">
+<footer class="bg-emerald-800 text-emerald-100">
   <div class="mx-auto grid max-w-6xl gap-10 px-6 py-14 sm:grid-cols-2 lg:grid-cols-4">
     <div>
       <a routerLink="/" class="flex items-center gap-2 text-lg font-bold text-white">
-        <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-300 text-emerald-950">A</span>
+        <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-lime-300 text-emerald-900">A</span>
         AutoSocial AI
       </a>
       <p class="mt-4 text-sm text-emerald-200/80">Plan, review, and schedule your social media posts from one dashboard.</p>
