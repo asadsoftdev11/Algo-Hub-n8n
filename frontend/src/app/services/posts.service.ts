@@ -99,6 +99,28 @@ export class PostsService {
     this.posts.update((list) => [record, ...list]);
   }
   
+    async generateQuickPreview(request: PostRequest): Promise<PreviewResult> {
+    await new Promise((resolve) => setTimeout(resolve, 700));
+    return {
+      videoUrl: null,
+      caption: request.caption || `A short post about ${request.title}.`,
+    };
+  }
+
+  async scheduleMany(requests: PostRequest[]): Promise<void> {
+    await new Promise((resolve) => setTimeout(resolve, 800));
+    const records = requests.map(
+      (request): PostRecord => ({
+        id: this.nextId++,
+        title: request.title,
+        platforms: request.platforms,
+        status: 'Scheduled',
+        when: `${request.scheduledAt?.replace('T', ' ')} (${request.timezone})`,
+      }),
+    );
+    this.posts.update((list) => [...records, ...list]);
+  }
+
   async retry(id: number): Promise<void> {
     this.setStatus(id, 'Processing');
     await new Promise((resolve) => setTimeout(resolve, 1500));

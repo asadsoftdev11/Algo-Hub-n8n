@@ -31,6 +31,7 @@ export class Shell {
   links = [
     { label: 'Demo', path: '/app/demo', paidOnly: false, icon: 'M12 2a10 10 0 100 20 10 10 0 000-20z M10 8l6 4-6 4z' },
     { label: 'Create post', path: '/app/create', paidOnly: true, icon: 'M12 5v14M5 12h14' },
+    { label: 'Bulk schedule', path: '/app/bulk', paidOnly: true, icon: 'M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z' },
     { label: 'Posts', path: '/app/posts', paidOnly: true, icon: 'M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01' },
     { label: 'Accounts', path: '/app/accounts', paidOnly: true, icon: 'M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71' },
     { label: 'Dashboard', path: '/app/dashboard', paidOnly: true, icon: 'M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z' },
