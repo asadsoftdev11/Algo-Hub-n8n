@@ -92,6 +92,6 @@ const DOCS: Record<string, LegalDoc> = {
 export class Legal {
   private route = inject(ActivatedRoute);
 
-  readonly contactEmail = 'support@yourcompany.com';
+  readonly contactEmail = 'support@algohub.com';
   readonly doc = DOCS[this.route.snapshot.data['doc']] ?? DOCS['privacy'];
 }

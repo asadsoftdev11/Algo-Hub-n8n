@@ -2,10 +2,11 @@ import { Component, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
+import { AuthPanel } from '../../shared/auth-panel';
 
 @Component({
   selector: 'app-signin',
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, AuthPanel],
   templateUrl: './signin.html',
 })
 export class Signin {

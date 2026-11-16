@@ -22,6 +22,11 @@ export interface PostRecord {
   error?: string;
 }
 
+export interface PreviewResult {
+  videoUrl: string | null;
+  caption: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class PostsService {
   readonly posts = signal<PostRecord[]>([
@@ -41,24 +46,35 @@ export class PostsService {
 
   private nextId = 100;
 
-  stagesFor(mode: PublishMode): string[] {
-    if (mode === 'schedule') {
-      return ['Saving your post', 'Adding it to the schedule'];
-    }
-    return [
-      'Writing the script',
-      'Finding video clips',
-      'Building your video',
-      'Waiting for the video to finish',
-      'Publishing to your accounts',
-    ];
+     readonly generationStages = [
+    'Writing the script',
+    'Finding video clips',
+    'Building your video',
+    'Waiting for the video to finish',
+  ];
+
+  publishStagesFor(mode: PublishMode): string[] {
+    return mode === 'schedule'
+      ? ['Saving your post', 'Adding it to the schedule']
+      : ['Sending to your accounts', 'Confirming with each platform'];
   }
 
-  async submit(request: PostRequest, onStage: (index: number) => void): Promise<void> {
-    const total = this.stagesFor(request.publishMode).length;
-    for (let i = 0; i < total; i++) {
+  async generatePreview(request: PostRequest, onStage: (index: number) => void): Promise<PreviewResult> {
+    for (let i = 0; i < this.generationStages.length; i++) {
       onStage(i);
       await new Promise((resolve) => setTimeout(resolve, 1200));
+    }
+    return {
+      videoUrl: null,
+      caption: request.caption || `A short post about ${request.title}.`,
+    };
+  }
+
+  async publish(request: PostRequest, onStage: (index: number) => void): Promise<void> {
+    const stages = this.publishStagesFor(request.publishMode);
+    for (let i = 0; i < stages.length; i++) {
+      onStage(i);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
     }
 
     const isNow = request.publishMode === 'now';
@@ -72,6 +88,17 @@ export class PostsService {
     this.posts.update((list) => [record, ...list]);
   }
 
+  saveDraft(request: PostRequest): void {
+    const record: PostRecord = {
+      id: this.nextId++,
+      title: request.title,
+      platforms: request.platforms,
+      status: 'Draft',
+      when: 'Not scheduled',
+    };
+    this.posts.update((list) => [record, ...list]);
+  }
+  
   async retry(id: number): Promise<void> {
     this.setStatus(id, 'Processing');
     await new Promise((resolve) => setTimeout(resolve, 1500));

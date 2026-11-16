@@ -15,7 +15,7 @@ export class Contact {
   private support = inject(SupportService);
 
   readonly embedded = this.route.snapshot.data['embedded'] === true;
-  readonly contactEmail = 'support@yourcompany.com';
+  readonly contactEmail = 'support@algohub.com';
   readonly topics = ['General question', 'Billing and plans', 'Technical problem', 'Account and data'];
 
   name = this.auth.user()?.name ?? '';
