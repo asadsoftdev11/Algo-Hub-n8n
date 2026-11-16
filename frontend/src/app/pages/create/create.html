@@ -6,6 +6,13 @@
     Demo mode: no real video is created or posted until the automation is connected.
   </div>
 
+  @if (editing && step() !== 'done') {
+    <div class="mt-4 flex flex-wrap items-center justify-between gap-2 rounded-lg bg-sky-50 px-4 py-3 text-sm text-sky-800">
+      <span>You are editing a saved post.</span>
+      <a routerLink="/app/posts" class="font-semibold underline">Back to Posts</a>
+    </div>
+  }
+
   <ol class="mt-6 flex items-center text-sm">
     @for (label of stepLabels; track label; let i = $index) {
       <li class="flex items-center gap-2">
@@ -111,6 +118,9 @@
       <p class="font-semibold text-slate-900">
         {{ step() === 'generating' ? 'Creating your video preview' : 'Sending your post' }}
       </p>
+      @if (step() === 'generating') {
+        <button (click)="cancelGeneration()" class="mt-2 text-sm font-semibold text-emerald-700 hover:underline">← Cancel and go back</button>
+      }
       <ul class="mt-4 space-y-4">
         @for (s of stages(); track s; let i = $index) {
           <li class="flex items-center gap-3 text-sm">
@@ -195,7 +205,7 @@
           {{ publishMode === 'now' ? 'Approve and publish' : 'Approve and schedule' }}
         </button>
         <button (click)="createPreview()" class="rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">Regenerate video</button>
-        <button (click)="editIdea()" class="rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">Edit idea</button>
+        <button (click)="editDetails()" class="rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">Edit details</button>
         <button (click)="saveDraft()" class="rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">Save as draft</button>
         <button (click)="discard()" class="px-2 py-2.5 text-sm font-semibold text-red-600 hover:underline">Discard</button>
       </div>

@@ -50,6 +50,8 @@ export class Bulk {
   ];
   timezone = this.auth.user()?.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
 
+    private runId = 0;
+
   step = signal<Step>('upload');
   fileName = signal('');
   errorMessage = signal('');
@@ -143,10 +145,11 @@ export class Bulk {
     this.rows.update((list) => list.filter((r) => r.errors.length === 0));
   }
 
-  async createPreviews() {
+    async createPreviews() {
     const rows = this.validRows();
     if (!this.canCreatePreviews) return;
 
+    const run = ++this.runId;
     this.errorMessage.set('');
     this.progress.set(0);
     this.step.set('generating');
@@ -155,15 +158,28 @@ export class Bulk {
       const created: BulkItem[] = [];
       for (const row of rows) {
         const preview = await this.postsService.generateQuickPreview(this.buildRequest(row, row.caption));
+        if (run !== this.runId) return;
         created.push({ row, caption: preview.caption, decision: 'waiting' });
         this.progress.set(created.length);
       }
       this.items.set(created);
       this.step.set('review');
     } catch {
+      if (run !== this.runId) return;
       this.errorMessage.set('We could not create the video previews. Please try again.');
       this.step.set('check');
     }
+  }
+
+  cancelGeneration() {
+    this.runId++;
+    this.step.set('check');
+  }
+
+  backToCheck() {
+    if (this.items().length > 0 && !confirm('Going back will discard your review choices. Continue?')) return;
+    this.items.set([]);
+    this.step.set('check');
   }
 
   setDecision(id: number, decision: Decision) {

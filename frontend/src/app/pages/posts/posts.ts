@@ -1,6 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { PostStatus, PostsService } from '../../services/posts.service';
+import { Router, RouterLink } from '@angular/router';
+import { PostRecord, PostStatus, PostsService } from '../../services/posts.service';
 
 type Filter = 'All' | PostStatus;
 
@@ -11,6 +11,7 @@ type Filter = 'All' | PostStatus;
 })
 export class Posts {
   private postsService = inject(PostsService);
+  private router = inject(Router);
 
   readonly filters: Filter[] = ['All', 'Draft', 'Scheduled', 'Processing', 'Published', 'Failed'];
   activeFilter = signal<Filter>('All');
@@ -34,7 +35,31 @@ export class Posts {
     return filter === 'All' ? all.length : all.filter((p) => p.status === filter).length;
   }
 
-  retry(id: number) {
-    this.postsService.retry(id);
+  edit(post: PostRecord) {
+    if (this.postsService.startEdit(post.id)) {
+      this.router.navigate(['/app/create']);
+    }
+  }
+
+  duplicate(post: PostRecord) {
+    if (this.postsService.startEdit(post.id, true)) {
+      this.router.navigate(['/app/create']);
+    }
+  }
+
+  remove(post: PostRecord) {
+    if (confirm(`Delete "${post.title}"? This cannot be undone.`)) {
+      this.postsService.deletePost(post.id);
+    }
+  }
+
+  cancelSchedule(post: PostRecord) {
+    if (confirm('Cancel the schedule? The post will be kept as a draft.')) {
+      this.postsService.cancelSchedule(post.id);
+    }
+  }
+
+  retry(post: PostRecord) {
+    this.postsService.retry(post.id);
   }
 }

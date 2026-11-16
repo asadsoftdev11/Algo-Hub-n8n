@@ -106,3 +106,21 @@ button:not(:disabled):active { transform: scale(0.98); }
   .float-slow-delay, .pulse-ring { animation: none; }
   .shine::after { display: none; }
 }
+
+@keyframes drift {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-30px, 40px); }
+}
+@keyframes drift-reverse {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(40px, -30px); }
+}
+@keyframes spin-slow { to { transform: rotate(360deg); } }
+
+.drift { animation: drift 14s ease-in-out infinite; }
+.drift-reverse { animation: drift-reverse 16s ease-in-out infinite; }
+.spin-slow { animation: spin-slow 40s linear infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .drift, .drift-reverse, .spin-slow { animation: none; }
+}

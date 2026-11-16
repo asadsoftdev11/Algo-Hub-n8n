@@ -13,6 +13,11 @@ export interface PostRequest {
   timezone: string;
 }
 
+export interface PreviewResult {
+  videoUrl: string | null;
+  caption: string;
+}
+
 export interface PostRecord {
   id: number;
   title: string;
@@ -20,11 +25,20 @@ export interface PostRecord {
   status: PostStatus;
   when: string;
   error?: string;
+  request?: PostRequest;
+  videoUrl?: string | null;
 }
 
-export interface PreviewResult {
+export interface PendingEdit {
+  request: PostRequest;
   videoUrl: string | null;
-  caption: string;
+  startAt: 'form' | 'preview';
+  replaceId: number | null;
+}
+
+export interface SaveOptions {
+  replaceId?: number | null;
+  videoUrl?: string | null;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -44,14 +58,15 @@ export class PostsService {
     },
   ]);
 
-  private nextId = 100;
-
-     readonly generationStages = [
+  readonly generationStages = [
     'Writing the script',
     'Finding video clips',
     'Building your video',
     'Waiting for the video to finish',
   ];
+
+  private nextId = 100;
+  private pendingEdit: PendingEdit | null = null;
 
   publishStagesFor(mode: PublishMode): string[] {
     return mode === 'schedule'
@@ -70,36 +85,7 @@ export class PostsService {
     };
   }
 
-  async publish(request: PostRequest, onStage: (index: number) => void): Promise<void> {
-    const stages = this.publishStagesFor(request.publishMode);
-    for (let i = 0; i < stages.length; i++) {
-      onStage(i);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-    }
-
-    const isNow = request.publishMode === 'now';
-    const record: PostRecord = {
-      id: this.nextId++,
-      title: request.title,
-      platforms: request.platforms,
-      status: isNow ? 'Published' : 'Scheduled',
-      when: isNow ? 'Just now' : `${request.scheduledAt?.replace('T', ' ')} (${request.timezone})`,
-    };
-    this.posts.update((list) => [record, ...list]);
-  }
-
-  saveDraft(request: PostRequest): void {
-    const record: PostRecord = {
-      id: this.nextId++,
-      title: request.title,
-      platforms: request.platforms,
-      status: 'Draft',
-      when: 'Not scheduled',
-    };
-    this.posts.update((list) => [record, ...list]);
-  }
-  
-    async generateQuickPreview(request: PostRequest): Promise<PreviewResult> {
+  async generateQuickPreview(request: PostRequest): Promise<PreviewResult> {
     await new Promise((resolve) => setTimeout(resolve, 700));
     return {
       videoUrl: null,
@@ -107,24 +93,88 @@ export class PostsService {
     };
   }
 
+  async publish(request: PostRequest, onStage: (index: number) => void, options: SaveOptions = {}): Promise<void> {
+    const stages = this.publishStagesFor(request.publishMode);
+    for (let i = 0; i < stages.length; i++) {
+      onStage(i);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+
+    const isNow = request.publishMode === 'now';
+    this.store(request, isNow ? 'Published' : 'Scheduled', isNow ? 'Just now' : this.scheduleLabel(request), options);
+  }
+
   async scheduleMany(requests: PostRequest[]): Promise<void> {
     await new Promise((resolve) => setTimeout(resolve, 800));
-    const records = requests.map(
-      (request): PostRecord => ({
-        id: this.nextId++,
-        title: request.title,
-        platforms: request.platforms,
-        status: 'Scheduled',
-        when: `${request.scheduledAt?.replace('T', ' ')} (${request.timezone})`,
-      }),
+    [...requests].reverse().forEach((request) => this.store(request, 'Scheduled', this.scheduleLabel(request)));
+  }
+
+  saveDraft(request: PostRequest, options: SaveOptions = {}): void {
+    this.store(request, 'Draft', 'Not scheduled', options);
+  }
+
+  startEdit(id: number, asCopy = false): boolean {
+    const post = this.posts().find((p) => p.id === id);
+    if (!post) return false;
+
+    const saved = post.request ?? this.fallbackRequest(post);
+    this.pendingEdit = {
+      request: asCopy ? { ...saved, publishMode: 'now', scheduledAt: null } : saved,
+      videoUrl: asCopy ? null : (post.videoUrl ?? null),
+      startAt: !asCopy && post.request ? 'preview' : 'form',
+      replaceId: asCopy ? null : id,
+    };
+    return true;
+  }
+
+  takePendingEdit(): PendingEdit | null {
+    const edit = this.pendingEdit;
+    this.pendingEdit = null;
+    return edit;
+  }
+
+  deletePost(id: number): void {
+    this.posts.update((list) => list.filter((p) => p.id !== id));
+  }
+
+  cancelSchedule(id: number): void {
+    this.posts.update((list) =>
+      list.map((p) => (p.id === id ? { ...p, status: 'Draft', when: 'Not scheduled' } : p)),
     );
-    this.posts.update((list) => [...records, ...list]);
   }
 
   async retry(id: number): Promise<void> {
     this.setStatus(id, 'Processing');
     await new Promise((resolve) => setTimeout(resolve, 1500));
     this.setStatus(id, 'Published');
+  }
+
+  private store(request: PostRequest, status: PostStatus, when: string, options: SaveOptions = {}) {
+    const record: PostRecord = {
+      id: this.nextId++,
+      title: request.title,
+      platforms: request.platforms,
+      status,
+      when,
+      request,
+      videoUrl: options.videoUrl ?? null,
+    };
+    this.posts.update((list) => [record, ...list.filter((p) => p.id !== options.replaceId)]);
+  }
+
+  private scheduleLabel(request: PostRequest) {
+    return `${request.scheduledAt?.replace('T', ' ')} (${request.timezone})`;
+  }
+
+  private fallbackRequest(post: PostRecord): PostRequest {
+    return {
+      title: post.title,
+      caption: '',
+      platforms: post.platforms,
+      publishMode: 'now',
+      scheduledAt: null,
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    };
   }
 
   private setStatus(id: number, status: PostStatus) {

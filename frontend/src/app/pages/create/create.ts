@@ -1,9 +1,9 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AccountsService } from '../../services/accounts.service';
 import { AuthService } from '../../services/auth.service';
-import { Platform, PostRequest, PostsService, PreviewResult, PublishMode } from '../../services/posts.service';
+import { PendingEdit, Platform, PostRequest, PostsService, PreviewResult, PublishMode } from '../../services/posts.service';
 
 type Step = 'form' | 'generating' | 'preview' | 'publishing' | 'done';
 type Outcome = 'sent' | 'scheduled' | 'draft';
@@ -14,6 +14,7 @@ type Outcome = 'sent' | 'scheduled' | 'draft';
   templateUrl: './create.html',
 })
 export class Create {
+  private router = inject(Router);
   private postsService = inject(PostsService);
   private accountsService = inject(AccountsService);
   private auth = inject(AuthService);
@@ -44,6 +45,18 @@ export class Create {
   currentStage = signal(0);
   errorMessage = signal('');
 
+  private editingId: number | null = null;
+  private runId = 0;
+
+  constructor() {
+    const pending = this.postsService.takePendingEdit();
+    if (pending) this.loadEdit(pending);
+  }
+
+  get editing() {
+    return this.editingId !== null;
+  }
+
   get stepIndex() {
     if (this.step() === 'form') return 0;
     if (this.step() === 'generating' || this.step() === 'preview') return 1;
@@ -67,6 +80,7 @@ export class Create {
 
   async createPreview() {
     if (!this.isValid) return;
+    const run = ++this.runId;
     this.errorMessage.set('');
     this.preview.set(null);
     this.stages.set(this.postsService.generationStages);
@@ -74,14 +88,23 @@ export class Create {
     this.step.set('generating');
 
     try {
-      const result = await this.postsService.generatePreview(this.buildRequest(this.caption.trim()), (i) => this.currentStage.set(i));
+      const result = await this.postsService.generatePreview(this.buildRequest(this.caption.trim()), (i) => {
+        if (run === this.runId) this.currentStage.set(i);
+      });
+      if (run !== this.runId) return;
       this.preview.set(result);
       this.finalCaption = result.caption;
       this.step.set('preview');
     } catch {
+      if (run !== this.runId) return;
       this.errorMessage.set('We could not create your video. Please try again.');
       this.step.set('form');
     }
+  }
+
+  cancelGeneration() {
+    this.runId++;
+    this.step.set('form');
   }
 
   async approve() {
@@ -92,7 +115,7 @@ export class Create {
     this.step.set('publishing');
 
     try {
-      await this.postsService.publish(request, (i) => this.currentStage.set(i));
+      await this.postsService.publish(request, (i) => this.currentStage.set(i), this.saveOptions());
       this.outcome.set(request.publishMode === 'now' ? 'sent' : 'scheduled');
       this.step.set('done');
     } catch {
@@ -102,22 +125,30 @@ export class Create {
   }
 
   saveDraft() {
-    this.postsService.saveDraft(this.buildRequest(this.finalCaption.trim()));
+    this.postsService.saveDraft(this.buildRequest(this.finalCaption.trim()), this.saveOptions());
     this.outcome.set('draft');
     this.step.set('done');
   }
 
-  editIdea() {
+  editDetails() {
     this.errorMessage.set('');
     this.step.set('form');
   }
 
   discard() {
-    const ok = confirm('Discard this video? It will not be saved or published.');
-    if (ok) this.createAnother();
+    const message = this.editing
+      ? 'Leave without saving? The saved post stays as it was.'
+      : 'Discard this video? It will not be saved or published.';
+    if (!confirm(message)) return;
+
+    const wasEditing = this.editing;
+    this.createAnother();
+    if (wasEditing) this.router.navigate(['/app/posts']);
   }
 
   createAnother() {
+    this.runId++;
+    this.editingId = null;
     this.title = '';
     this.caption = '';
     this.finalCaption = '';
@@ -134,6 +165,27 @@ export class Create {
     if (i < this.currentStage()) return 'bg-emerald-600 text-white';
     if (i === this.currentStage()) return 'bg-amber-100 text-amber-700';
     return 'bg-slate-100 text-slate-400';
+  }
+
+  private loadEdit(edit: PendingEdit) {
+    const { request } = edit;
+    const [date = '', time = ''] = (request.scheduledAt ?? '').split('T');
+
+    this.title = request.title;
+    this.caption = request.caption;
+    this.finalCaption = request.caption;
+    this.publishMode = request.publishMode;
+    this.scheduleDate = date;
+    this.scheduleTime = time;
+    this.timezone = request.timezone;
+    this.platforms.forEach((p) => (p.selected = request.platforms.includes(p.name)));
+    this.editingId = edit.replaceId;
+    this.preview.set({ videoUrl: edit.videoUrl, caption: request.caption });
+    this.step.set(edit.startAt);
+  }
+
+  private saveOptions() {
+    return { replaceId: this.editingId, videoUrl: this.preview()?.videoUrl ?? null };
   }
 
   private buildRequest(caption: string): PostRequest {
