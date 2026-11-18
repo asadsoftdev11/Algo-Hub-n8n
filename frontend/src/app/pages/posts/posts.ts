@@ -1,12 +1,13 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { PostRecord, PostStatus, PostsService } from '../../services/posts.service';
+import { PlatformIcon } from '../../shared/platform-icon';
 
 type Filter = 'All' | PostStatus;
 
 @Component({
   selector: 'app-posts',
-  imports: [RouterLink],
+  imports: [RouterLink, PlatformIcon],
   templateUrl: './posts.html',
 })
 export class Posts {

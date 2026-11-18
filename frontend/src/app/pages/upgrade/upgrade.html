@@ -10,7 +10,7 @@
 
   <div class="mt-8 grid gap-6 md:grid-cols-3">
     @for (p of plans; track p.id) {
-      <div class="relative flex flex-col rounded-xl border bg-white p-6" [class]="p.popular ? 'border-emerald-500 shadow-lg ring-2 ring-emerald-100 plan-glow' : 'border-slate-200'">
+      <div class="reveal relative flex flex-col rounded-xl border bg-white p-6 transition duration-200 hover:-translate-y-1 hover:shadow-lg" [class]="p.popular ? 'border-emerald-500 shadow-lg ring-2 ring-emerald-100 plan-glow' : 'border-slate-200'">
         @if (p.popular) {
           <span class="absolute -top-3 left-6 rounded-full bg-accent-300 px-3 py-1 text-xs font-bold text-emerald-900">Most popular</span>
         }
@@ -32,7 +32,7 @@
         <button
           (click)="choose(p)"
           [disabled]="busy() || auth.user()?.plan === p.id"
-          class="mt-6 rounded-lg bg-emerald-600 py-2.5 font-semibold text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
+          class="shine mt-6 rounded-lg bg-emerald-600 py-2.5 font-semibold text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {{ auth.user()?.plan === p.id ? 'Current plan' : 'Subscribe to ' + p.name }}
         </button>

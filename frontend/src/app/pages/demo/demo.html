@@ -1,5 +1,14 @@
 <div class="mx-auto max-w-4xl">
-    <div class="gradient-animated fade-up mb-6 rounded-xl bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 p-6 text-white">
+    <div class="gradient-animated fade-up relative overflow-hidden mb-6 rounded-xl bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 p-6 text-white">
+    <img
+      src="images/review.webp"
+      alt=""
+      aria-hidden="true"
+      width="1024"
+      height="765"
+      decoding="async"
+      class="art-blend art-fade-left pointer-events-none absolute inset-y-0 right-0 hidden h-full w-1/2 object-cover opacity-70 sm:block"
+    />
     <p class="text-xs font-semibold uppercase tracking-wide text-emerald-100">Welcome to AutoSocial AI</p>
     <p class="mt-1 text-xl font-bold">Write once, review it, publish on schedule</p>
     @if (!auth.isSubscribed()) {
@@ -101,6 +110,41 @@
       }
     }
   </div>
+</div>
+
+<div class="mt-10 overflow-hidden rounded-xl border border-slate-200 bg-white">
+  <div class="gradient-animated bg-gradient-to-r from-emerald-700 to-teal-600 px-6 py-5 text-white">
+    <span class="rounded-full bg-accent-300 px-3 py-1 text-xs font-bold text-emerald-900">Business plan</span>
+    <h3 class="mt-3 text-lg font-bold">Bulk scheduling from a spreadsheet</h3>
+    <p class="mt-1 text-sm text-emerald-50">Upload many topics at once. Fix mistakes in the table, review each video, then schedule them together.</p>
+  </div>
+  <div class="grid gap-6 p-6 md:grid-cols-2">
+    <ol class="space-y-3 text-sm text-slate-700">
+      <li class="flex gap-3"><span class="font-bold text-emerald-600">1</span> Upload a CSV file of topics, dates, and times</li>
+      <li class="flex gap-3"><span class="font-bold text-emerald-600">2</span> Fix any flagged rows directly in the table</li>
+      <li class="flex gap-3"><span class="font-bold text-emerald-600">3</span> Choose different platforms for each topic</li>
+      <li class="flex gap-3"><span class="font-bold text-emerald-600">4</span> Approve each video, then schedule</li>
+    </ol>
+    <div class="space-y-2 text-sm">
+      <div class="fade-up flex items-center justify-between rounded-md bg-slate-50 px-3 py-2">
+        <span class="text-slate-700">5 daily habits for a productive morning</span>
+        <span class="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-800">Ready</span>
+      </div>
+      <div class="fade-up flex items-center justify-between rounded-md bg-slate-50 px-3 py-2" style="animation-delay: 0.4s">
+        <span class="text-slate-700">Three tips for better customer service</span>
+        <span class="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-800">Ready</span>
+      </div>
+      <div class="fade-up flex items-center justify-between rounded-md bg-red-50 px-3 py-2" style="animation-delay: 0.8s">
+        <span class="text-slate-700">Weekend offer announcement</span>
+        <span class="rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-semibold text-red-700">Fix date</span>
+      </div>
+    </div>
+  </div>
+  @if (!auth.isBusiness()) {
+    <div class="border-t border-slate-100 px-6 py-4">
+      <a routerLink="/app/upgrade" class="text-sm font-semibold text-emerald-700 hover:underline">See the Business plan →</a>
+    </div>
+  }
 </div>
 
 <h3 class="mt-10 text-lg font-bold text-slate-900">What you get with a subscription</h3>

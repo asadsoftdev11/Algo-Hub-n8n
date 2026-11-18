@@ -23,7 +23,14 @@
 
   <div class="mt-6 rounded-xl border border-slate-200 bg-white">
     @if (visiblePosts().length === 0) {
-      <p class="px-5 py-10 text-center text-sm text-slate-500">No posts here yet.</p>
+      <div class="flex flex-col items-center px-5 py-12 text-center">
+        <div class="h-28 w-36 overflow-hidden rounded-xl bg-emerald-800">
+          <img src="images/review.webp" alt="" aria-hidden="true" width="1024" height="765" loading="lazy" decoding="async" class="h-full w-full object-cover" />
+        </div>
+        <p class="mt-4 font-semibold text-slate-900">No posts here yet</p>
+        <p class="mt-1 text-sm text-slate-500">Create a post and it will appear here with its status.</p>
+        <a routerLink="/app/create" class="shine mt-4 rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700">Create a post</a>
+      </div>
     } @else {
       <div class="overflow-x-auto">
         <table class="w-full text-left text-sm">
@@ -48,7 +55,7 @@
                 <td class="px-5 py-4">
                   <div class="flex flex-wrap gap-1">
                     @for (name of p.platforms; track name) {
-                      <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600">{{ name }}</span>
+                      <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 py-0.5 pl-1 pr-2 text-xs text-slate-600"><app-platform-icon [name]="name" [size]="14" />{{ name }}</span>
                     }
                   </div>
                 </td>

@@ -58,6 +58,7 @@
             [class]="!isConnected(p.name) ? 'cursor-not-allowed border-slate-200 bg-slate-50 text-slate-400' : p.selected ? 'cursor-pointer border-emerald-500 bg-emerald-50 text-emerald-800' : 'cursor-pointer border-slate-200 text-slate-700'"
           >
             <input type="checkbox" [(ngModel)]="p.selected" [disabled]="!isConnected(p.name)" class="accent-emerald-600" />
+            <app-platform-icon [name]="p.name" [size]="22" />
             {{ p.name }}
           </label>
         }
@@ -109,9 +110,23 @@
         [disabled]="!isValid"
         class="mt-8 shine w-full rounded-lg bg-emerald-600 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
       >
-        Create video preview
+        {{ canKeepVideo ? 'Regenerate video from this idea' : 'Create video preview' }}
       </button>
       <p class="mt-2 text-center text-xs text-slate-500">Nothing is published yet. You will watch the video first.</p>
+
+      @if (canKeepVideo) {
+        <div class="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 p-4">
+          <p class="text-sm font-semibold text-emerald-900">Your video is already created</p>
+          <p class="mt-1 text-xs text-emerald-800">Changing only the caption, platforms, or schedule does not need a new video.</p>
+          <button
+            (click)="keepVideo()"
+            [disabled]="!isValid"
+            class="mt-3 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Keep this video and continue
+          </button>
+        </div>
+      }
     }
 
     @if (step() === 'generating' || step() === 'publishing') {
@@ -165,7 +180,7 @@
               <dt class="text-xs font-medium uppercase text-slate-500">Publishing to</dt>
               <dd class="mt-1 flex flex-wrap gap-2">
                 @for (name of selectedPlatforms; track name) {
-                  <span class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800">{{ name }}</span>
+                  <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 py-1 pl-1.5 pr-3 text-xs font-semibold text-emerald-800"><app-platform-icon [name]="name" [size]="16" />{{ name }}</span>
                 }
               </dd>
             </div>

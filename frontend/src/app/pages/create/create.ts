@@ -4,13 +4,14 @@ import { Router, RouterLink } from '@angular/router';
 import { AccountsService } from '../../services/accounts.service';
 import { AuthService } from '../../services/auth.service';
 import { PendingEdit, Platform, PostRequest, PostsService, PreviewResult, PublishMode } from '../../services/posts.service';
+import { PlatformIcon } from '../../shared/platform-icon';
 
 type Step = 'form' | 'generating' | 'preview' | 'publishing' | 'done';
 type Outcome = 'sent' | 'scheduled' | 'draft';
 
 @Component({
   selector: 'app-create',
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, PlatformIcon],
   templateUrl: './create.html',
 })
 export class Create {
@@ -47,6 +48,7 @@ export class Create {
 
   private editingId: number | null = null;
   private runId = 0;
+  private ideaAtPreview = '';
 
   constructor() {
     const pending = this.postsService.takePendingEdit();
@@ -93,6 +95,7 @@ export class Create {
       });
       if (run !== this.runId) return;
       this.preview.set(result);
+      this.ideaAtPreview = this.title.trim();
       this.finalCaption = result.caption;
       this.step.set('preview');
     } catch {
@@ -130,9 +133,22 @@ export class Create {
     this.step.set('done');
   }
 
-  editDetails() {
+   editDetails() {
+    this.caption = this.finalCaption;
     this.errorMessage.set('');
     this.step.set('form');
+  }
+
+  get canKeepVideo() {
+    return this.preview() !== null && this.title.trim() === this.ideaAtPreview;
+  }
+
+  keepVideo() {
+    if (!this.isValid || !this.canKeepVideo) return;
+    const typed = this.caption.trim();
+    if (typed) this.finalCaption = typed;
+    this.errorMessage.set('');
+    this.step.set('preview');
   }
 
   discard() {
@@ -157,6 +173,7 @@ export class Create {
     this.scheduleTime = '';
     this.platforms.forEach((p) => (p.selected = false));
     this.preview.set(null);
+    this.ideaAtPreview = '';
     this.errorMessage.set('');
     this.step.set('form');
   }
@@ -180,7 +197,7 @@ export class Create {
     this.timezone = request.timezone;
     this.platforms.forEach((p) => (p.selected = request.platforms.includes(p.name)));
     this.editingId = edit.replaceId;
-    this.preview.set({ videoUrl: edit.videoUrl, caption: request.caption });
+    this.ideaAtPreview = request.title;
     this.step.set(edit.startAt);
   }
 

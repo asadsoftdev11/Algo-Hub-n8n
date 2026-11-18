@@ -1,10 +1,11 @@
 import { Component, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Reveal } from '../../shared/reveal.directive';
+import { PlatformIcon } from '../../shared/platform-icon';
 
 @Component({
   selector: 'app-home',
-  imports: [RouterLink, Reveal],
+  imports: [RouterLink, Reveal, PlatformIcon],
   templateUrl: './home.html',
 })
 export class Home {
@@ -15,15 +16,15 @@ export class Home {
     { name: 'Instagram', url: 'https://www.instagram.com', color: 'bg-pink-500' },
   ];
 
-  progress = [
-    { label: 'Script written with Gemini', icon: '✓', badge: 'bg-emerald-600 text-white' },
-    { label: 'Video clips found with Pexels', icon: '✓', badge: 'bg-emerald-600 text-white' },
-    { label: 'Publishing to your accounts', icon: '…', badge: 'bg-amber-100 text-amber-700' },
+    progress = [
+    { label: 'Script written', icon: '✓', badge: 'bg-emerald-600 text-white' },
+    { label: 'Video created', icon: '✓', badge: 'bg-emerald-600 text-white' },
+    { label: 'Waiting for your approval', icon: '…', badge: 'bg-amber-100 text-amber-700' },
   ];
 
   steps = [
     { title: 'Type one idea', text: 'Write a topic or title in one simple box.' },
-    { title: 'AI writes the script', text: 'Gemini turns your idea into ready content.' },
+    { title: 'AI writes the script', text: 'Your idea is turned into a ready-to-use script.' },
     { title: 'Video is created', text: 'Matching video clips are found and assembled.' },
     { title: 'Published on schedule', text: 'Your post goes live on the platforms you pick, at the time you choose.' },
   ];
@@ -37,7 +38,7 @@ export class Home {
     plans = [
     { name: 'Starter', price: '$9', popular: false, icon: 'M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z', tint: 'bg-sky-100 text-sky-700', features: ['1 connected account', 'Limited scheduled posts', 'Email support'] },
     { name: 'Creator', price: '$19', popular: true, icon: 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z', tint: 'bg-emerald-100 text-emerald-700', features: ['Several connected accounts', 'Higher post allowance', 'Email support'] },
-    { name: 'Business', price: '$49', popular: false, icon: 'M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16', tint: 'bg-violet-100 text-violet-700', features: ['More connected accounts', 'Higher usage limits', 'Priority support'] },
+    { name: 'Business', price: '$49', popular: false, icon: 'M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16', tint: 'bg-violet-100 text-violet-700', features: ['More connected accounts', 'Bulk scheduling from spreadsheets', 'Higher usage limits', 'Priority support'] },
   ];
     marquee = Array.from({ length: 8 }, () => this.platforms).flat();
     menuOpen = signal(false);
@@ -46,4 +47,9 @@ export class Home {
     y: 82 + Math.floor(i / 5) * 34,
     active: [2, 6, 11].includes(i),
   }));
+    bulkRows = [
+    { topic: '5 daily habits for a productive morning', when: 'Mon, 10:30', platforms: 'TikTok, Instagram' },
+    { topic: 'Three tips for better customer service', when: 'Tue, 14:00', platforms: 'LinkedIn, Facebook' },
+    { topic: 'How to start a small online business', when: 'Thu, 09:00', platforms: 'Facebook' },
+  ];
 }

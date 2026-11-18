@@ -4,11 +4,9 @@
 
   <div class="mt-6 space-y-4">
     @for (a of accounts(); track a.platform) {
-      <div class="flex items-center justify-between gap-4 rounded-xl border border-slate-200 bg-white p-5">
+      <div class="flex items-center justify-between gap-4 rounded-xl border border-slate-200 bg-white p-5 transition duration-200 hover:shadow-md">
         <div class="flex items-center gap-4">
-          <span class="flex h-11 w-11 items-center justify-center rounded-full text-lg font-bold text-white" [class]="colors[a.platform]">
-            {{ a.platform[0] }}
-          </span>
+          <app-platform-icon [name]="a.platform" [size]="44" />
           <div>
             <p class="font-semibold text-slate-900">{{ a.platform }}</p>
             <span class="mt-1 inline-block rounded-full px-3 py-0.5 text-xs font-semibold" [class]="statusStyle[a.status]">{{ a.status }}</span>
@@ -16,11 +14,11 @@
         </div>
 
         @if (a.status === 'Connected') {
-          <button (click)="disconnect(a.platform)" class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+          <button (click)="disconnect(a.platform)" class="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
             Disconnect
           </button>
         } @else {
-          <button (click)="connect(a.platform)" class="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700">
+          <button (click)="connect(a.platform)" class="shine rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700">
             {{ a.status === 'Expired' ? 'Reconnect' : 'Connect' }}
           </button>
         }

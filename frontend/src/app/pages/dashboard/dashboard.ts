@@ -3,10 +3,11 @@ import { RouterLink } from '@angular/router';
 import { CountUp } from '../../shared/count-up.directive';
 import { AccountsService } from '../../services/accounts.service';
 import { PostStatus, PostsService } from '../../services/posts.service';
+import { PlatformIcon } from '../../shared/platform-icon';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [RouterLink, CountUp],
+  imports: [RouterLink, CountUp, PlatformIcon],
   templateUrl: './dashboard.html',
 })
 export class Dashboard {

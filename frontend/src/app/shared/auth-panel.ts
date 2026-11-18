@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 @Component({
@@ -31,39 +31,26 @@ import { RouterLink } from '@angular/router';
       </div>
 
       <div class="relative">
-        <div class="relative hidden h-36 [@media(min-height:600px)]:block">
-          <div class="float-slow absolute left-0 top-2 w-40 rounded-xl bg-white/10 p-3 ring-1 ring-white/25 backdrop-blur-md">
-            <div class="flex h-14 items-center justify-center rounded-lg bg-white/10">
-              <span class="pulse-ring flex h-8 w-8 items-center justify-center rounded-full bg-accent-300 text-xs text-emerald-900">▶</span>
-            </div>
-            <div class="mt-2 h-1.5 rounded-full bg-white/20">
-              <div class="h-1.5 w-2/3 rounded-full bg-accent-300"></div>
-            </div>
-            <p class="mt-2 text-[11px] font-medium text-emerald-50">Video preview</p>
-          </div>
-
-          <div class="float-slow-delay absolute left-44 top-0 hidden w-48 rounded-xl bg-white/15 p-3 ring-1 ring-white/30 backdrop-blur-md xl:block">
-            <p class="text-[10px] font-semibold uppercase tracking-wide text-accent-300">Scheduled</p>
-            <p class="mt-1 text-sm font-semibold text-white">Tomorrow, 10:30 AM</p>
-            <div class="mt-2 flex gap-1.5">
-              <span class="flex h-5 w-5 items-center justify-center rounded-full bg-blue-600 text-[9px] font-bold text-white">F</span>
-              <span class="flex h-5 w-5 items-center justify-center rounded-full bg-pink-500 text-[9px] font-bold text-white">I</span>
-              <span class="flex h-5 w-5 items-center justify-center rounded-full bg-slate-900 text-[9px] font-bold text-white">T</span>
-              <span class="flex h-5 w-5 items-center justify-center rounded-full bg-sky-700 text-[9px] font-bold text-white">L</span>
-            </div>
-          </div>
-
-          <div class="float-slow absolute bottom-0 left-0 flex items-center gap-2 rounded-full bg-accent-300 px-3 py-1.5 text-xs font-bold text-emerald-900 shadow-lg" style="animation-delay: 1s">
-            <span>✓</span> Approved by you
-          </div>
+        <div class="hidden [@media(min-height:640px)]:block">
+          <img
+            [src]="image()"
+            alt=""
+            aria-hidden="true"
+            width="1024"
+            height="765"
+            decoding="async"
+            class="art-blend art-fade float-slow mx-auto h-auto max-h-60 w-auto"
+          />
         </div>
-
         <p class="mt-4 text-xs text-emerald-100/80">© 2026 AutoSocial AI</p>
       </div>
     </aside>
   `,
 })
 export class AuthPanel {
+  art = input<'review' | 'prism'>('review');
+  image = computed(() => (this.art() === 'prism' ? 'images/prism.webp' : 'images/review.webp'));
+
   points = [
     'You review every video before it is published',
     'Connect accounts through official platform logins',

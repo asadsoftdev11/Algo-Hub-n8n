@@ -1,263 +1,525 @@
-<div class="mx-auto max-w-4xl">
-  <h2 class="text-2xl font-bold text-slate-900">Bulk schedule</h2>
+<div class="mx-auto max-w-5xl">
+  <div class="flex flex-wrap items-center gap-3">
+    <h2 class="text-2xl font-bold text-slate-900">Bulk schedule</h2>
+    <span class="rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold text-violet-700">Business plan</span>
+  </div>
   <p class="mt-1 text-sm text-slate-500">Upload a spreadsheet of topics and dates. You review every video before it is scheduled.</p>
 
-  <div class="mt-4 rounded-lg bg-amber-50 px-4 py-2 text-xs text-amber-800">
-    Demo mode: no real videos are created or posted until the automation is connected.
-  </div>
-
-  <ol class="mt-6 flex items-center text-sm">
-    @for (label of stepLabels; track label; let i = $index) {
-      <li class="flex items-center gap-2">
-        <span
-          class="flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold"
-          [class]="i <= stepIndex ? 'bg-emerald-600 text-white' : 'bg-slate-200 text-slate-500'"
-        >{{ i + 1 }}</span>
-        <span [class]="i <= stepIndex ? 'font-semibold text-slate-900' : 'text-slate-400'">{{ label }}</span>
-        @if (i < stepLabels.length - 1) {
-          <span class="mx-3 h-px w-8 bg-slate-300 sm:w-10"></span>
-        }
-      </li>
-    }
-  </ol>
-
-  <div class="mt-6 rounded-xl border border-slate-200 bg-white p-6">
-
-    @if (step() === 'upload') {
-      <p class="font-semibold text-slate-900">Upload your spreadsheet</p>
-      <p class="mt-1 text-sm text-slate-500">Save it as a CSV file (in Excel or Google Sheets: Save as, CSV Comma delimited).</p>
-
-      <div class="mt-4 overflow-x-auto rounded-lg border border-slate-200">
-        <table class="w-full text-left text-sm">
-          <thead class="bg-slate-50 text-xs uppercase text-slate-500">
-            <tr>
-              <th class="px-4 py-2 font-medium">topic</th>
-              <th class="px-4 py-2 font-medium">date</th>
-              <th class="px-4 py-2 font-medium">time</th>
-              <th class="px-4 py-2 font-medium">caption (optional)</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr class="border-t border-slate-100 text-slate-600">
-              <td class="px-4 py-2">5 daily habits for a productive morning</td>
-              <td class="px-4 py-2">2026-12-01</td>
-              <td class="px-4 py-2">10:30</td>
-              <td class="px-4 py-2 text-slate-400">leave empty for AI</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p class="mt-2 text-xs text-slate-500">Up to {{ maxRows }} rows at a time. The time is in the timezone you choose on the next step.</p>
-
-      <div class="mt-5 flex flex-wrap items-center gap-3">
-        <label class="shine cursor-pointer rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700">
-          Choose CSV file
-          <input type="file" accept=".csv,text/csv" (change)="onFile($event)" class="hidden" />
-        </label>
-        <button (click)="downloadTemplate()" class="rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">
-          Download template
-        </button>
+  @if (!auth.isBusiness()) {
+    <div class="mt-6 overflow-hidden rounded-xl border border-slate-200 bg-white">
+      <div class="gradient-animated bg-gradient-to-r from-emerald-700 via-emerald-600 to-teal-600 p-6 text-white">
+        <p class="text-xl font-bold">Schedule a whole month from one spreadsheet</p>
+        <p class="mt-1 text-sm text-emerald-50">Bulk scheduling is included with the Business plan.</p>
       </div>
 
-      @if (errorMessage()) {
-        <p class="mt-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{{ errorMessage() }}</p>
-      }
-    }
-
-    @if (step() === 'check') {
-      <div class="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <p class="font-semibold text-slate-900">{{ fileName() }}</p>
-          <p class="mt-1 text-sm text-slate-500">
-            {{ rows().length }} rows found,
-            <span class="font-semibold text-emerald-700">{{ validRows().length }} ready</span>
-            @if (invalidCount() > 0) {
-              , <span class="font-semibold text-red-600">{{ invalidCount() }} need fixing</span>
-            }
-          </p>
+      <div class="grid gap-4 p-6 sm:grid-cols-3">
+        <div class="reveal rounded-lg border border-slate-200 p-4">
+          <p class="text-xs font-semibold text-emerald-700">Step 1</p>
+          <p class="mt-1 text-sm font-semibold text-slate-900">Upload a CSV</p>
+          <p class="mt-1 text-xs text-slate-600">List your topics with a date and time for each.</p>
         </div>
-        <div class="flex gap-2">
-          @if (invalidCount() > 0) {
-            <button (click)="removeInvalidRows()" class="rounded-lg border border-red-300 px-3 py-2 text-xs font-semibold text-red-700 hover:bg-red-50">Remove invalid rows</button>
-          }
-          <button (click)="backToUpload()" class="rounded-lg border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">← Back to upload</button>
+        <div class="reveal rounded-lg border border-slate-200 p-4">
+          <p class="text-xs font-semibold text-emerald-700">Step 2</p>
+          <p class="mt-1 text-sm font-semibold text-slate-900">Fix and choose platforms</p>
+          <p class="mt-1 text-xs text-slate-600">Edit mistakes in the table and pick platforms for each topic.</p>
+        </div>
+        <div class="reveal rounded-lg border border-slate-200 p-4">
+          <p class="text-xs font-semibold text-emerald-700">Step 3</p>
+          <p class="mt-1 text-sm font-semibold text-slate-900">Review and schedule</p>
+          <p class="mt-1 text-xs text-slate-600">Watch each video, regenerate or edit any of them, then approve.</p>
         </div>
       </div>
 
-      <div class="mt-4 overflow-x-auto rounded-lg border border-slate-200">
-        <table class="w-full text-left text-sm">
-          <thead class="bg-slate-50 text-xs uppercase text-slate-500">
-            <tr>
-              <th class="px-4 py-2 font-medium">Row</th>
-              <th class="px-4 py-2 font-medium">Topic</th>
-              <th class="px-4 py-2 font-medium">Date</th>
-              <th class="px-4 py-2 font-medium">Time</th>
-              <th class="px-4 py-2 font-medium">Status</th>
-              <th class="px-4 py-2"></th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (row of rows(); track row.id) {
-              <tr class="border-t border-slate-100 align-top" [class.bg-red-50]="row.errors.length > 0">
-                <td class="px-4 py-3 text-slate-500">{{ row.line }}</td>
-                <td class="px-4 py-3 font-medium text-slate-800">{{ row.topic || '(empty)' }}</td>
-                <td class="px-4 py-3 text-slate-600">{{ row.date || '(empty)' }}</td>
-                <td class="px-4 py-3 text-slate-600">{{ row.time || '(empty)' }}</td>
-                <td class="px-4 py-3">
-                  @if (row.errors.length === 0) {
-                    <span class="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-800">Ready</span>
-                  } @else {
-                    <ul class="space-y-0.5 text-xs text-red-700">
-                      @for (e of row.errors; track e) {
-                        <li>{{ e }}</li>
-                      }
-                    </ul>
-                  }
-                </td>
-                <td class="px-4 py-3 text-right">
-                  <button (click)="removeRow(row.id)" class="text-xs font-semibold text-slate-500 hover:text-red-600">Remove</button>
-                </td>
+      <div class="px-6 pb-6">
+        <div class="overflow-x-auto rounded-lg border border-slate-200">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-slate-50 text-xs uppercase text-slate-500">
+              <tr>
+                <th class="px-4 py-2 font-medium">Topic</th>
+                <th class="px-4 py-2 font-medium">When</th>
+                <th class="px-4 py-2 font-medium">Platforms</th>
+                <th class="px-4 py-2 font-medium">Status</th>
               </tr>
-            }
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              <tr class="border-t border-slate-100">
+                <td class="px-4 py-2">5 daily habits for a productive morning</td>
+                <td class="px-4 py-2 text-slate-600">Mon, 10:30</td>
+                <td class="px-4 py-2">
+                  <div class="flex gap-1"><app-platform-icon name="TikTok" [size]="20" /><app-platform-icon name="Instagram" [size]="20" /></div>
+                </td>
+                <td class="px-4 py-2"><span class="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-800">Approved</span></td>
+              </tr>
+              <tr class="border-t border-slate-100">
+                <td class="px-4 py-2">Three tips for better customer service</td>
+                <td class="px-4 py-2 text-slate-600">Tue, 14:00</td>
+                <td class="px-4 py-2">
+                  <div class="flex gap-1"><app-platform-icon name="LinkedIn" [size]="20" /><app-platform-icon name="Facebook" [size]="20" /></div>
+                </td>
+                <td class="px-4 py-2"><span class="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-800">Approved</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      <p class="mt-6 text-sm font-semibold text-slate-800">Publish all of these to</p>
-      <div class="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-4">
-        @for (p of platforms; track p.name) {
-          <label
-            class="flex items-center gap-3 rounded-lg border px-4 py-3 text-sm font-medium"
-            [class]="!isConnected(p.name) ? 'cursor-not-allowed border-slate-200 bg-slate-50 text-slate-400' : p.selected ? 'cursor-pointer border-emerald-500 bg-emerald-50 text-emerald-800' : 'cursor-pointer border-slate-200 text-slate-700'"
-          >
-            <input type="checkbox" [(ngModel)]="p.selected" [disabled]="!isConnected(p.name)" class="accent-emerald-600" />
-            {{ p.name }}
+      <div class="flex flex-wrap items-center gap-3 border-t border-slate-100 p-6">
+        <a routerLink="/app/upgrade" class="shine rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700">
+          {{ auth.isSubscribed() ? 'Upgrade to Business' : 'View plans' }}
+        </a>
+        <p class="text-xs text-slate-500">You can still schedule single posts from Create post.</p>
+      </div>
+    </div>
+  } @else {
+    <div class="mt-4 rounded-lg bg-amber-50 px-4 py-2 text-xs text-amber-800">
+      Demo mode: no real videos are created or posted until the automation is connected.
+    </div>
+
+    <ol class="mt-6 flex items-center text-sm">
+      @for (label of stepLabels; track label; let i = $index) {
+        <li class="flex items-center gap-2">
+          <span
+            class="flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold"
+            [class]="i <= stepIndex ? 'bg-emerald-600 text-white' : 'bg-slate-200 text-slate-500'"
+          >{{ i + 1 }}</span>
+          <span [class]="i <= stepIndex ? 'font-semibold text-slate-900' : 'text-slate-400'">{{ label }}</span>
+          @if (i < stepLabels.length - 1) {
+            <span class="mx-3 h-px w-8 bg-slate-300 sm:w-10"></span>
+          }
+        </li>
+      }
+    </ol>
+
+    @if (step() === 'check' || step() === 'review') {
+      <p class="mt-3 text-xs text-slate-500">Your work is kept while you browse other pages. It is cleared when you log out.</p>
+    }
+
+    <div class="mt-4 rounded-xl border border-slate-200 bg-white p-6">
+
+      @if (step() === 'upload') {
+        <p class="font-semibold text-slate-900">Upload your spreadsheet</p>
+        <p class="mt-1 text-sm text-slate-500">Save it as a CSV file (in Excel or Google Sheets: Save as, CSV Comma delimited).</p>
+
+        <div class="mt-4 overflow-x-auto rounded-lg border border-slate-200">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-slate-50 text-xs uppercase text-slate-500">
+              <tr>
+                <th class="px-4 py-2 font-medium">topic</th>
+                <th class="px-4 py-2 font-medium">date</th>
+                <th class="px-4 py-2 font-medium">time</th>
+                <th class="px-4 py-2 font-medium">caption (optional)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-t border-slate-100 text-slate-600">
+                <td class="px-4 py-2">5 daily habits for a productive morning</td>
+                <td class="px-4 py-2">2026-12-01</td>
+                <td class="px-4 py-2">10:30</td>
+                <td class="px-4 py-2 text-slate-400">leave empty for AI</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="mt-2 text-xs text-slate-500">Up to {{ maxRows }} rows at a time. You choose the platforms for each topic after uploading.</p>
+
+        <div class="mt-5 flex flex-wrap items-center gap-3">
+          <label class="shine inline-flex cursor-pointer items-center gap-2 rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700">
+            <app-icon name="upload" />
+            Choose CSV file
+            <input type="file" accept=".csv,text/csv" (change)="onFile($event)" class="hidden" />
           </label>
-        }
-      </div>
-      <p class="mt-2 text-xs text-slate-500">
-        Greyed-out platforms are not connected yet.
-        <a routerLink="/app/accounts" class="font-semibold text-emerald-700 hover:underline">Connect accounts</a>
-      </p>
+          <button (click)="downloadTemplate()" class="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+            <app-icon name="download" />
+            Download template
+          </button>
+        </div>
 
-      <label class="mt-5 block text-sm font-semibold text-slate-800">Timezone for the times in your file</label>
-      <select [(ngModel)]="timezone" class="mt-2 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm sm:w-80">
-        @for (zone of timezones; track zone) {
-          <option [value]="zone">{{ zone }}</option>
+        @if (errorMessage()) {
+          <p class="mt-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{{ errorMessage() }}</p>
         }
-      </select>
-
-      @if (errorMessage()) {
-        <p class="mt-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{{ errorMessage() }}</p>
       }
 
-      <button
-        (click)="createPreviews()"
-        [disabled]="!canCreatePreviews"
-        class="shine mt-6 w-full rounded-lg bg-emerald-600 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
-      >
-        Create video previews ({{ validRows().length }})
-      </button>
-      <p class="mt-2 text-center text-xs text-slate-500">Nothing is scheduled yet. You will review each video first.</p>
-    }
+      @if (step() === 'check') {
+        <div class="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <p class="font-semibold text-slate-900">{{ fileName() }}</p>
+            <p class="mt-1 text-sm text-slate-500">
+              {{ checkedRows().length }} rows,
+              <span class="font-semibold text-emerald-700">{{ validRows().length }} ready</span>
+              @if (invalidCount() > 0) {
+                , <span class="font-semibold text-red-600">{{ invalidCount() }} need fixing</span>
+              }
+            </p>
+            <p class="mt-1 text-xs text-slate-500">Click any topic, date, or time to fix it. Rows update as you type.</p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            @if (invalidCount() > 0) {
+              <button (click)="removeInvalidRows()" class="inline-flex items-center gap-1.5 rounded-lg border border-red-200 bg-white px-3 py-2 text-xs font-semibold text-red-600 transition hover:bg-red-50">
+                <app-icon name="close" [size]="14" />
+                Remove invalid rows
+              </button>
+            }
+            <button (click)="backToUpload()" class="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50">
+              <app-icon name="back" [size]="14" />
+              Back to upload
+            </button>
+          </div>
+        </div>
 
-    @if (step() === 'generating') {
-      <button (click)="cancelGeneration()" class="mb-2 text-sm font-semibold text-emerald-700 hover:underline">← Cancel and go back</button>
-      <p class="font-semibold text-slate-900">Creating your video previews</p>
-      <p class="mt-1 text-sm text-slate-500">Video {{ progress() }} of {{ validRows().length }}</p>
-      <div class="mt-4 h-2.5 w-full rounded-full bg-slate-100">
-        <div class="h-2.5 rounded-full bg-emerald-500 transition-all duration-500" [style.width.%]="(progress() / validRows().length) * 100"></div>
-      </div>
-    }
-
-    @if (step() === 'review') {
-      <div class="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <button (click)="backToCheck()" class="mb-2 text-sm font-semibold text-emerald-700 hover:underline">← Back to check</button>
-          <p class="font-semibold text-slate-900">Review your videos</p>
-          <p class="mt-1 text-sm text-slate-500">
-            {{ approvedCount() }} approved, {{ waitingCount() }} waiting, {{ discardedCount() }} discarded
+        <div class="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-4">
+          <p class="text-sm font-semibold text-slate-800">Default platforms</p>
+          <p class="mt-1 text-xs text-slate-500">Used for every row without its own choice. You can change any row in the table.</p>
+          <div class="mt-3 flex flex-wrap items-center gap-2">
+            @for (name of allPlatforms; track name) {
+              <button
+                type="button"
+                (click)="toggleDefault(name)"
+                [disabled]="!isConnected(name)"
+                class="inline-flex items-center gap-1.5 rounded-full border py-1 pl-1.5 pr-3 text-xs font-semibold transition disabled:cursor-not-allowed disabled:opacity-40"
+                [class]="defaultPlatforms().includes(name) && isConnected(name) ? 'border-emerald-500 bg-emerald-50 text-emerald-800' : 'border-slate-300 bg-white text-slate-600 hover:border-emerald-300'"
+              >
+                <app-platform-icon [name]="name" [size]="18" />
+                {{ name }}
+              </button>
+            }
+            <button (click)="applyDefaultToAll()" class="rounded-lg border border-emerald-600 bg-white px-3 py-1.5 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-50">
+              Apply to all rows
+            </button>
+          </div>
+          <p class="mt-2 text-xs text-slate-500">
+            Greyed-out platforms are not connected.
+            <a routerLink="/app/accounts" class="font-semibold text-emerald-700 hover:underline">Connect accounts</a>
           </p>
         </div>
-        @if (waitingCount() > 0) {
-          <button (click)="approveRemaining()" class="rounded-lg border border-emerald-600 px-3 py-2 text-xs font-semibold text-emerald-700 hover:bg-emerald-50">
-            Approve all remaining
-          </button>
-        }
-      </div>
 
-      <div class="mt-4 grid gap-4 md:grid-cols-2">
-        @for (item of items(); track item.row.id) {
-          <div
-            class="rounded-lg border p-4"
-            [class]="item.decision === 'approved' ? 'border-emerald-400 bg-emerald-50/50' : item.decision === 'discarded' ? 'border-slate-200 bg-slate-50 opacity-60' : 'border-slate-200'"
-          >
-            <div class="flex gap-3">
-              <div class="flex h-20 w-28 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-emerald-700 to-teal-600 text-white">
-                <svg viewBox="0 0 24 24" class="h-8 w-8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="10" />
-                  <path d="M10 8l6 4-6 4z" />
-                </svg>
-              </div>
-              <div class="min-w-0">
-                <p class="text-sm font-semibold text-slate-900">{{ item.row.topic }}</p>
-                <p class="mt-1 text-xs text-slate-500">{{ item.row.date }} at {{ item.row.time }}</p>
-                <p class="mt-1 text-xs text-slate-500">{{ selectedPlatforms.join(', ') }}</p>
-              </div>
-            </div>
-
-            <textarea
-              rows="3"
-              maxlength="2200"
-              [(ngModel)]="item.caption"
-              [disabled]="item.decision === 'discarded'"
-              class="mt-3 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:bg-slate-100"
-            ></textarea>
-
-            <div class="mt-3 flex items-center gap-2">
-              @if (item.decision === 'waiting') {
-                <button (click)="setDecision(item.row.id, 'approved')" class="rounded-lg bg-emerald-600 px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-700">Approve</button>
-                <button (click)="setDecision(item.row.id, 'discarded')" class="rounded-lg px-3 py-2 text-xs font-semibold text-red-600 hover:underline">Discard</button>
-              } @else {
-                <span
-                  class="rounded-full px-3 py-1 text-xs font-semibold"
-                  [class]="item.decision === 'approved' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-600'"
-                >{{ item.decision === 'approved' ? 'Approved' : 'Discarded' }}</span>
-                <button (click)="setDecision(item.row.id, 'waiting')" class="text-xs font-semibold text-slate-500 hover:underline">Undo</button>
+        <div class="mt-4 overflow-x-auto rounded-lg border border-slate-200">
+          <table class="w-full min-w-[60rem] text-left text-sm">
+            <thead class="bg-slate-50 text-xs uppercase text-slate-500">
+              <tr>
+                <th class="px-3 py-2 font-medium">Row</th>
+                <th class="px-3 py-2 font-medium">Topic</th>
+                <th class="px-3 py-2 font-medium">Date</th>
+                <th class="px-3 py-2 font-medium">Time</th>
+                <th class="px-3 py-2 font-medium">Platforms</th>
+                <th class="px-3 py-2 font-medium">Status</th>
+                <th class="px-3 py-2"></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of checkedRows(); track row.id) {
+                <tr class="border-t border-slate-100 align-top" [class.bg-red-50]="row.errors.length > 0">
+                  <td class="px-3 py-3 text-slate-500">{{ row.line }}</td>
+                  <td class="px-3 py-2">
+                    <input
+                      type="text"
+                      maxlength="200"
+                      [ngModel]="row.topic"
+                      (ngModelChange)="updateRow(row.id, 'topic', $event)"
+                      class="w-full min-w-48 rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    />
+                  </td>
+                  <td class="px-3 py-2">
+                    <input
+                      type="date"
+                      [min]="today"
+                      [ngModel]="row.date"
+                      (ngModelChange)="updateRow(row.id, 'date', $event)"
+                      class="rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    />
+                  </td>
+                  <td class="px-3 py-2">
+                    <input
+                      type="time"
+                      [ngModel]="row.time"
+                      (ngModelChange)="updateRow(row.id, 'time', $event)"
+                      class="rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    />
+                  </td>
+                  <td class="px-3 py-2">
+                    <div class="flex flex-wrap gap-1">
+                      @for (name of allPlatforms; track name) {
+                        <button
+                          type="button"
+                          (click)="toggleRowPlatform(row, name)"
+                          [disabled]="!isConnected(name)"
+                          class="inline-flex items-center gap-1 rounded-full border py-0.5 pl-1 pr-2 text-[11px] font-semibold transition disabled:cursor-not-allowed disabled:opacity-40"
+                          [class]="row.chosen.includes(name) ? 'border-emerald-500 bg-emerald-50 text-emerald-800' : 'border-slate-200 bg-white text-slate-500 hover:border-emerald-300'"
+                        >
+                          <app-platform-icon [name]="name" [size]="14" />
+                          {{ name }}
+                        </button>
+                      }
+                    </div>
+                    @if (row.errors.length === 0 && row.chosen.length === 0) {
+                      <p class="mt-1 text-[11px] text-amber-700">Choose a platform</p>
+                    }
+                  </td>
+                  <td class="px-3 py-3">
+                    @if (row.errors.length === 0) {
+                      <span class="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-800">Ready</span>
+                    } @else {
+                      <ul class="space-y-0.5 text-xs text-red-700">
+                        @for (e of row.errors; track e) {
+                          <li>{{ e }}</li>
+                        }
+                      </ul>
+                    }
+                  </td>
+                  <td class="px-3 py-2 text-right">
+                    <button (click)="removeRow(row.id)" class="rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-500 transition hover:border-red-200 hover:text-red-600">
+                      Remove
+                    </button>
+                  </td>
+                </tr>
               }
+            </tbody>
+          </table>
+        </div>
+
+        <label class="mt-5 block text-sm font-semibold text-slate-800">Timezone for the times in your file</label>
+        <select [(ngModel)]="state.timezone" class="mt-2 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm sm:w-80">
+          @for (zone of timezones; track zone) {
+            <option [value]="zone">{{ zone }}</option>
+          }
+        </select>
+
+        @if (missingPlatformCount() > 0) {
+          <p class="mt-4 rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-800">
+            {{ missingPlatformCount() }} ready {{ missingPlatformCount() === 1 ? 'row still needs' : 'rows still need' }} a platform. Choose default platforms above, or pick them in the row.
+          </p>
+        }
+
+        @if (errorMessage()) {
+          <p class="mt-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{{ errorMessage() }}</p>
+        }
+
+        <button
+          (click)="createPreviews()"
+          [disabled]="!canCreatePreviews"
+          class="shine mt-6 w-full rounded-lg bg-emerald-600 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          Create video previews ({{ validRows().length }})
+        </button>
+        <p class="mt-2 text-center text-xs text-slate-500">Nothing is scheduled yet. You will review each video first.</p>
+      }
+
+      @if (step() === 'generating') {
+        <button (click)="cancelGeneration()" class="mb-3 inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50">
+          <app-icon name="back" [size]="14" />
+          Cancel and go back
+        </button>
+        <p class="font-semibold text-slate-900">Creating your video previews</p>
+        <p class="mt-1 text-sm text-slate-500">Video {{ progress() }} of {{ validRows().length }}</p>
+        <div class="mt-4 h-2.5 w-full rounded-full bg-slate-100">
+          <div class="h-2.5 rounded-full bg-emerald-500 transition-all duration-500" [style.width.%]="(progress() / validRows().length) * 100"></div>
+        </div>
+      }
+
+      @if (step() === 'review') {
+        <div class="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <button (click)="backToCheck()" class="mb-3 inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50">
+              <app-icon name="back" [size]="14" />
+              Back to check
+            </button>
+            <p class="font-semibold text-slate-900">Review your videos</p>
+            <div class="mt-2 flex flex-wrap gap-2 text-xs font-semibold">
+              <span class="rounded-full bg-emerald-100 px-3 py-1 text-emerald-800">{{ approvedCount() }} approved</span>
+              <span class="rounded-full bg-amber-100 px-3 py-1 text-amber-800">{{ waitingCount() }} waiting</span>
+              <span class="rounded-full bg-slate-200 px-3 py-1 text-slate-600">{{ discardedCount() }} discarded</span>
             </div>
           </div>
-        }
-      </div>
+          @if (waitingCount() > 0) {
+            <button (click)="approveRemaining()" class="shine inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700">
+              <app-icon name="check" />
+              Approve all remaining ({{ waitingCount() }})
+            </button>
+          }
+        </div>
 
-      @if (errorMessage()) {
-        <p class="mt-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{{ errorMessage() }}</p>
+        <div class="mt-4 grid gap-4 md:grid-cols-2">
+          @for (item of items(); track item.row.id) {
+            <div
+              class="relative rounded-lg border p-4"
+              [class]="item.decision === 'approved' ? 'border-emerald-400 bg-emerald-50/50' : item.decision === 'discarded' ? 'border-slate-200 bg-slate-50 opacity-60' : 'border-slate-200'"
+            >
+              @if (item.busy) {
+                <div class="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-white/80 backdrop-blur-sm">
+                  <div class="flex items-center gap-2 text-sm font-semibold text-emerald-800">
+                    <span class="h-4 w-4 animate-spin rounded-full border-2 border-emerald-600 border-t-transparent"></span>
+                    Creating a new video...
+                  </div>
+                </div>
+              }
+
+              <div class="flex gap-3">
+                <div class="flex h-20 w-28 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-emerald-700 to-teal-600 text-white">
+                  <svg viewBox="0 0 24 24" class="h-8 w-8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M10 8l6 4-6 4z" />
+                  </svg>
+                </div>
+                <div class="min-w-0">
+                  <p class="text-sm font-semibold text-slate-900">{{ item.row.topic }}</p>
+                  <p class="mt-1 text-xs text-slate-500">{{ item.row.date }} at {{ item.row.time }}</p>
+                  <div class="mt-2 flex gap-1">
+                    @for (name of item.row.chosen; track name) {
+                      <span [attr.title]="name"><app-platform-icon [name]="name" [size]="20" /></span>
+                    }
+                  </div>
+                </div>
+              </div>
+
+              @if (item.edit; as edit) {
+                <div class="mt-3 space-y-3 rounded-lg border border-slate-200 bg-slate-50 p-3">
+                  <div>
+                    <label class="mb-1 block text-xs font-medium text-slate-600">Topic</label>
+                    <input
+                      type="text"
+                      maxlength="200"
+                      [(ngModel)]="edit.topic"
+                      class="w-full rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    />
+                  </div>
+                  <div class="grid grid-cols-2 gap-3">
+                    <div>
+                      <label class="mb-1 block text-xs font-medium text-slate-600">Date</label>
+                      <input
+                        type="date"
+                        [min]="today"
+                        [(ngModel)]="edit.date"
+                        class="w-full rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      />
+                    </div>
+                    <div>
+                      <label class="mb-1 block text-xs font-medium text-slate-600">Time</label>
+                      <input
+                        type="time"
+                        [(ngModel)]="edit.time"
+                        class="w-full rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      />
+                    </div>
+                  </div>
+                  <div class="flex flex-wrap gap-1.5">
+                    @for (name of allPlatforms; track name) {
+                      <button
+                        type="button"
+                        (click)="toggleEditPlatform(item, name)"
+                        [disabled]="!isConnected(name)"
+                        class="inline-flex items-center gap-1 rounded-full border py-0.5 pl-1 pr-2 text-[11px] font-semibold transition disabled:cursor-not-allowed disabled:opacity-40"
+                        [class]="edit.platforms.includes(name) ? 'border-emerald-500 bg-emerald-50 text-emerald-800' : 'border-slate-200 bg-white text-slate-500 hover:border-emerald-300'"
+                      >
+                        <app-platform-icon [name]="name" [size]="14" />
+                        {{ name }}
+                      </button>
+                    }
+                  </div>
+                  @if (item.editError) {
+                    <p class="rounded-md bg-red-50 px-3 py-2 text-xs text-red-700">{{ item.editError }}</p>
+                  }
+                  <div class="flex gap-2">
+                    <button (click)="saveEdit(item.row.id)" class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3.5 py-2 text-xs font-semibold text-white transition hover:bg-emerald-700">
+                      <app-icon name="check" [size]="14" />
+                      Save changes
+                    </button>
+                    <button (click)="cancelEdit(item.row.id)" class="rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50">
+                      Cancel
+                    </button>
+                  </div>
+                  <p class="text-[11px] text-slate-500">Changing the topic creates a new video. Other changes keep the current one.</p>
+                </div>
+              }
+
+              <textarea
+                rows="3"
+                maxlength="2200"
+                [(ngModel)]="item.caption"
+                [disabled]="item.decision === 'discarded' || item.busy"
+                class="mt-3 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:bg-slate-100"
+              ></textarea>
+
+              @if (!item.edit) {
+                <div class="mt-3 flex flex-wrap items-center gap-2">
+                  @switch (item.decision) {
+                    @case ('waiting') {
+                      <button (click)="setDecision(item.row.id, 'approved')" [disabled]="item.busy" class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3.5 py-2 text-xs font-semibold text-white transition hover:bg-emerald-700 disabled:opacity-50">
+                        <app-icon name="check" [size]="14" />
+                        Approve
+                      </button>
+                      <button (click)="regenerateItem(item.row.id)" [disabled]="item.busy" class="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-50">
+                        <app-icon name="refresh" [size]="14" />
+                        Regenerate
+                      </button>
+                      <button (click)="startEdit(item.row.id)" [disabled]="item.busy" class="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-50">
+                        <app-icon name="edit" [size]="14" />
+                        Edit
+                      </button>
+                      <button (click)="setDecision(item.row.id, 'discarded')" [disabled]="item.busy" class="inline-flex items-center gap-1.5 rounded-lg border border-red-200 bg-white px-3.5 py-2 text-xs font-semibold text-red-600 transition hover:bg-red-50 disabled:opacity-50">
+                        <app-icon name="close" [size]="14" />
+                        Discard
+                      </button>
+                    }
+                    @case ('approved') {
+                      <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-3 py-1.5 text-xs font-semibold text-emerald-800">
+                        <app-icon name="check" [size]="14" />
+                        Approved
+                      </span>
+                      <button (click)="regenerateItem(item.row.id)" [disabled]="item.busy" class="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-50">
+                        <app-icon name="refresh" [size]="14" />
+                        Regenerate
+                      </button>
+                      <button (click)="startEdit(item.row.id)" [disabled]="item.busy" class="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-50">
+                        <app-icon name="edit" [size]="14" />
+                        Edit
+                      </button>
+                      <button (click)="setDecision(item.row.id, 'waiting')" class="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50">
+                        <app-icon name="undo" [size]="14" />
+                        Undo
+                      </button>
+                    }
+                    @default {
+                      <span class="rounded-full bg-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600">Discarded</span>
+                      <button (click)="setDecision(item.row.id, 'waiting')" class="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50">
+                        <app-icon name="undo" [size]="14" />
+                        Undo
+                      </button>
+                    }
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        @if (errorMessage()) {
+          <p class="mt-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{{ errorMessage() }}</p>
+        }
+
+        <div class="mt-6 border-t border-slate-100 pt-5">
+          <button
+            (click)="finish()"
+            [disabled]="saving() || anyBusy() || (approvedCount() === 0 && waitingCount() === 0)"
+            class="shine rounded-lg bg-emerald-600 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {{ saving() ? 'Saving...' : 'Schedule ' + approvedCount() + ' approved' }}
+          </button>
+          <p class="mt-2 text-xs text-slate-500">Videos you have not approved are saved as drafts. Discarded ones are removed.</p>
+        </div>
       }
 
-      <div class="mt-6 border-t border-slate-100 pt-5">
-        <button
-          (click)="finish()"
-          [disabled]="saving() || (approvedCount() === 0 && waitingCount() === 0)"
-          class="shine rounded-lg bg-emerald-600 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          {{ saving() ? 'Saving...' : 'Schedule ' + approvedCount() + ' approved' }}
-        </button>
-        <p class="mt-2 text-xs text-slate-500">Videos you have not approved are saved as drafts. Discarded ones are removed.</p>
-      </div>
-    }
-
-    @if (step() === 'done') {
-      <div class="rounded-lg bg-emerald-50 p-5">
-        <p class="font-semibold text-emerald-800">All done</p>
-        <p class="mt-1 text-sm text-emerald-700">
-          {{ result().scheduled }} scheduled, {{ result().drafts }} saved as drafts, {{ result().discarded }} discarded.
-        </p>
-        <div class="mt-4 flex flex-wrap gap-3">
-          <button (click)="startOver()" class="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700">Upload another file</button>
-          <a routerLink="/app/posts" class="rounded-lg border border-emerald-600 px-4 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-100">View posts</a>
+      @if (step() === 'done') {
+        <div class="rounded-lg bg-emerald-50 p-5">
+          <p class="font-semibold text-emerald-800">All done</p>
+          <p class="mt-1 text-sm text-emerald-700">
+            {{ result().scheduled }} scheduled, {{ result().drafts }} saved as drafts, {{ result().discarded }} discarded.
+          </p>
+          <div class="mt-4 flex flex-wrap gap-3">
+            <button (click)="startOver()" class="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700">Upload another file</button>
+            <a routerLink="/app/posts" class="rounded-lg border border-emerald-600 bg-white px-4 py-2 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-50">View posts</a>
+          </div>
         </div>
-      </div>
-    }
+      }
 
-  </div>
+    </div>
+  }
 </div>

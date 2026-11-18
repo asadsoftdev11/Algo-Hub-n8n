@@ -14,7 +14,7 @@
       @for (link of links; track link.path) {
         <a
           [routerLink]="link.path"
-          routerLinkActive="bg-white/20 text-white"
+          routerLinkActive="bg-white/20 text-white before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:rounded-r before:bg-accent-300"
           [attr.title]="collapsed() ? link.label : null"
           class="relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-emerald-50 transition hover:bg-white/10"
           [class.justify-center]="collapsed()"
@@ -24,8 +24,8 @@
           </svg>
           @if (!collapsed()) {
             <span class="flex-1">{{ link.label }}</span>
-            @if (link.paidOnly && !auth.isSubscribed()) {
-              <span class="rounded-full bg-accent-300 px-2 py-0.5 text-[10px] font-semibold uppercase text-emerald-900">Locked</span>
+            @if (lockLabel(link)) {
+              <span class="rounded-full bg-accent-300 px-2 py-0.5 text-[10px] font-semibold uppercase text-emerald-900">{{ lockLabel(link) }}</span>
             }
             @if (link.path === '/app/posts' && failedCount() > 0) {
               <span class="rounded-full bg-red-500 px-2 py-0.5 text-[10px] font-bold text-white">{{ failedCount() }}</span>

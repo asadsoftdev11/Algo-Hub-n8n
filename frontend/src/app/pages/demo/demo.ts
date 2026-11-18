@@ -18,6 +18,7 @@ export class Demo {
     { title: 'Connect your accounts', text: 'Link TikTok, LinkedIn, Facebook, and Instagram through each platform’s official login.' },
     { title: 'Track every post', text: 'See Draft, Scheduled, Processing, Published, or Failed, and retry anything that fails.' },
     { title: 'Monitor your usage', text: 'A dashboard shows your posts and how much of your plan you have used.' },
+    { title: 'Bulk scheduling (Business plan)', text: 'Upload a spreadsheet of topics and dates, review each video, and schedule them together.' },
   ];
 
     tourSteps = [

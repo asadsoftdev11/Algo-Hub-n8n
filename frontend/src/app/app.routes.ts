@@ -39,7 +39,7 @@ export const routes: Routes = [
       { path: 'settings', component: Settings, title: 'Settings - AutoSocial AI' },
       { path: 'support', component: Contact, data: { embedded: true }, title: 'Help and support - AutoSocial AI' },
       { path: 'create', component: Create, canActivate: [subscribedGuard], title: 'Create post - AutoSocial AI' },
-      { path: 'bulk', component: Bulk, canActivate: [subscribedGuard], title: 'Bulk schedule - AutoSocial AI' },
+      { path: 'bulk', component: Bulk, title: 'Bulk schedule - AutoSocial AI' },
       { path: 'posts', component: Posts, canActivate: [subscribedGuard], title: 'Posts - AutoSocial AI' },
       { path: 'accounts', component: Accounts, canActivate: [subscribedGuard], title: 'Accounts - AutoSocial AI' },
       { path: 'dashboard', component: Dashboard, canActivate: [subscribedGuard], title: 'Dashboard - AutoSocial AI' },

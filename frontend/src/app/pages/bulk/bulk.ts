@@ -3,69 +3,64 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AccountsService } from '../../services/accounts.service';
 import { AuthService } from '../../services/auth.service';
+import {
+  BulkCheckedRow,
+  BulkDecision,
+  BulkDraftService,
+  BulkItem,
+  BulkRawRow,
+} from '../../services/bulk-draft.service';
 import { Platform, PostRequest, PostsService } from '../../services/posts.service';
 import { parseCsv } from '../../shared/csv';
+import { Icon } from '../../shared/icon';
+import { PlatformIcon } from '../../shared/platform-icon';
 
-type Step = 'upload' | 'check' | 'generating' | 'review' | 'done';
-type Decision = 'waiting' | 'approved' | 'discarded';
-
-interface BulkRow {
-  id: number;
-  line: number;
-  topic: string;
-  date: string;
-  time: string;
-  caption: string;
-  errors: string[];
-}
-
-interface BulkItem {
-  row: BulkRow;
-  caption: string;
-  decision: Decision;
-}
+type RowField = 'topic' | 'date' | 'time';
 
 const MAX_ROWS = 50;
+const ALL_PLATFORMS: Platform[] = ['TikTok', 'Instagram', 'Facebook', 'LinkedIn'];
 
 @Component({
   selector: 'app-bulk',
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, Icon, PlatformIcon],
   templateUrl: './bulk.html',
 })
 export class Bulk {
   private postsService = inject(PostsService);
   private accountsService = inject(AccountsService);
-  private auth = inject(AuthService);
+  readonly auth = inject(AuthService);
+  readonly state = inject(BulkDraftService);
 
   readonly stepLabels = ['Upload', 'Check', 'Review'];
   readonly timezones = Intl.supportedValuesOf('timeZone');
+  readonly allPlatforms = ALL_PLATFORMS;
   readonly maxRows = MAX_ROWS;
   readonly today = new Date().toLocaleDateString('en-CA');
 
-  platforms: { name: Platform; selected: boolean }[] = [
-    { name: 'TikTok', selected: false },
-    { name: 'Instagram', selected: false },
-    { name: 'Facebook', selected: false },
-    { name: 'LinkedIn', selected: false },
-  ];
-  timezone = this.auth.user()?.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
+  readonly step = this.state.step;
+  readonly fileName = this.state.fileName;
+  readonly rows = this.state.rows;
+  readonly defaultPlatforms = this.state.defaultPlatforms;
+  readonly items = this.state.items;
+  readonly progress = this.state.progress;
+  readonly result = this.state.result;
 
-    private runId = 0;
-
-  step = signal<Step>('upload');
-  fileName = signal('');
   errorMessage = signal('');
-  rows = signal<BulkRow[]>([]);
-  items = signal<BulkItem[]>([]);
-  progress = signal(0);
   saving = signal(false);
-  result = signal({ scheduled: 0, drafts: 0, discarded: 0 });
 
-  validRows = computed(() => this.rows().filter((r) => r.errors.length === 0));
-  invalidCount = computed(() => this.rows().length - this.validRows().length);
+  checkedRows = computed<BulkCheckedRow[]>(() =>
+    this.rows().map((row) => {
+      const chosen = (row.platforms ?? this.defaultPlatforms()).filter((p) => this.isConnected(p));
+      return { ...row, chosen, errors: this.validate(row) };
+    }),
+  );
+  validRows = computed(() => this.checkedRows().filter((r) => r.errors.length === 0));
+  invalidCount = computed(() => this.checkedRows().length - this.validRows().length);
+  missingPlatformCount = computed(() => this.validRows().filter((r) => r.chosen.length === 0).length);
   approvedCount = computed(() => this.items().filter((i) => i.decision === 'approved').length);
   waitingCount = computed(() => this.items().filter((i) => i.decision === 'waiting').length);
   discardedCount = computed(() => this.items().filter((i) => i.decision === 'discarded').length);
+  anyBusy = computed(() => this.items().some((i) => i.busy));
 
   get stepIndex() {
     if (this.step() === 'upload') return 0;
@@ -73,12 +68,8 @@ export class Bulk {
     return 2;
   }
 
-  get selectedPlatforms(): Platform[] {
-    return this.platforms.filter((p) => p.selected && this.isConnected(p.name)).map((p) => p.name);
-  }
-
   get canCreatePreviews() {
-    return this.validRows().length > 0 && this.selectedPlatforms.length > 0;
+    return this.validRows().length > 0 && this.missingPlatformCount() === 0;
   }
 
   isConnected(name: Platform) {
@@ -137,19 +128,44 @@ export class Bulk {
     URL.revokeObjectURL(url);
   }
 
+  updateRow(id: number, field: RowField, value: string) {
+    this.rows.update((list) =>
+      list.map((row) => {
+        if (row.id !== id) return row;
+        const next: BulkRawRow = { ...row };
+        next[field] = value;
+        return next;
+      }),
+    );
+  }
+
+  toggleDefault(name: Platform) {
+    this.defaultPlatforms.update((list) => (list.includes(name) ? list.filter((p) => p !== name) : [...list, name]));
+  }
+
+  toggleRowPlatform(row: BulkCheckedRow, name: Platform) {
+    const next = row.chosen.includes(name) ? row.chosen.filter((p) => p !== name) : [...row.chosen, name];
+    this.rows.update((list) => list.map((r) => (r.id === row.id ? { ...r, platforms: next } : r)));
+  }
+
+  applyDefaultToAll() {
+    this.rows.update((list) => list.map((r) => ({ ...r, platforms: null })));
+  }
+
   removeRow(id: number) {
     this.rows.update((list) => list.filter((r) => r.id !== id));
   }
 
   removeInvalidRows() {
-    this.rows.update((list) => list.filter((r) => r.errors.length === 0));
+    const bad = new Set(this.checkedRows().filter((r) => r.errors.length > 0).map((r) => r.id));
+    this.rows.update((list) => list.filter((r) => !bad.has(r.id)));
   }
 
-    async createPreviews() {
+  async createPreviews() {
     const rows = this.validRows();
     if (!this.canCreatePreviews) return;
 
-    const run = ++this.runId;
+    const run = ++this.state.runId;
     this.errorMessage.set('');
     this.progress.set(0);
     this.step.set('generating');
@@ -158,21 +174,21 @@ export class Bulk {
       const created: BulkItem[] = [];
       for (const row of rows) {
         const preview = await this.postsService.generateQuickPreview(this.buildRequest(row, row.caption));
-        if (run !== this.runId) return;
-        created.push({ row, caption: preview.caption, decision: 'waiting' });
+        if (run !== this.state.runId) return;
+        created.push({ row, caption: preview.caption, decision: 'waiting', busy: false, edit: null, editError: '' });
         this.progress.set(created.length);
       }
       this.items.set(created);
       this.step.set('review');
     } catch {
-      if (run !== this.runId) return;
+      if (run !== this.state.runId) return;
       this.errorMessage.set('We could not create the video previews. Please try again.');
       this.step.set('check');
     }
   }
 
   cancelGeneration() {
-    this.runId++;
+    this.state.runId++;
     this.step.set('check');
   }
 
@@ -182,12 +198,76 @@ export class Bulk {
     this.step.set('check');
   }
 
-  setDecision(id: number, decision: Decision) {
-    this.items.update((list) => list.map((item) => (item.row.id === id ? { ...item, decision } : item)));
+  setDecision(id: number, decision: BulkDecision) {
+    this.patchItem(id, { decision });
   }
 
   approveRemaining() {
-    this.items.update((list) => list.map((item) => (item.decision === 'waiting' ? { ...item, decision: 'approved' } : item)));
+    this.items.update((list) =>
+      list.map((item) => (item.decision === 'waiting' && !item.busy ? { ...item, decision: 'approved' } : item)),
+    );
+  }
+
+  async regenerateItem(id: number, keepCaption = true) {
+    const item = this.items().find((i) => i.row.id === id);
+    if (!item || item.busy) return;
+
+    this.patchItem(id, { busy: true, edit: null, editError: '' });
+    try {
+      const caption = keepCaption ? item.caption.trim() : '';
+      const preview = await this.postsService.generateQuickPreview(this.buildRequest(item.row, caption));
+      this.patchItem(id, { busy: false, decision: 'waiting', caption: preview.caption });
+    } catch {
+      this.patchItem(id, { busy: false });
+      this.errorMessage.set('We could not create a new video. Please try again.');
+    }
+  }
+
+  startEdit(id: number) {
+    const item = this.items().find((i) => i.row.id === id);
+    if (!item) return;
+    this.patchItem(id, {
+      edit: { topic: item.row.topic, date: item.row.date, time: item.row.time, platforms: [...item.row.chosen] },
+      editError: '',
+    });
+  }
+
+  cancelEdit(id: number) {
+    this.patchItem(id, { edit: null, editError: '' });
+  }
+
+  toggleEditPlatform(item: BulkItem, name: Platform) {
+    if (!item.edit) return;
+    const list = item.edit.platforms;
+    const next = list.includes(name) ? list.filter((p) => p !== name) : [...list, name];
+    this.patchItem(item.row.id, { edit: { ...item.edit, platforms: next } });
+  }
+
+  async saveEdit(id: number) {
+    const item = this.items().find((i) => i.row.id === id);
+    const edit = item?.edit;
+    if (!item || !edit) return;
+
+    const errors = this.validate({ ...item.row, topic: edit.topic, date: edit.date, time: edit.time });
+    if (edit.platforms.length === 0) errors.push('Choose at least one platform');
+    if (errors.length > 0) {
+      this.patchItem(id, { editError: errors.join('. ') });
+      return;
+    }
+
+    const topicChanged = edit.topic.trim() !== item.row.topic.trim();
+    const row: BulkCheckedRow = {
+      ...item.row,
+      topic: edit.topic.trim(),
+      date: edit.date,
+      time: edit.time,
+      platforms: edit.platforms,
+      chosen: edit.platforms,
+      errors: [],
+    };
+    this.patchItem(id, { row, edit: null, editError: '' });
+
+    if (topicChanged) await this.regenerateItem(id, false);
   }
 
   async finish() {
@@ -212,12 +292,8 @@ export class Bulk {
   }
 
   startOver() {
-    this.rows.set([]);
-    this.items.set([]);
-    this.fileName.set('');
+    this.state.reset();
     this.errorMessage.set('');
-    this.platforms.forEach((p) => (p.selected = false));
-    this.step.set('upload');
   }
 
   backToUpload() {
@@ -227,28 +303,31 @@ export class Bulk {
     this.step.set('upload');
   }
 
-  private buildRow(index: number, cells: string[], columns: string[]): BulkRow {
+  private patchItem(id: number, patch: Partial<BulkItem>) {
+    this.items.update((list) => list.map((item) => (item.row.id === id ? { ...item, ...patch } : item)));
+  }
+
+  private buildRow(index: number, cells: string[], columns: string[]): BulkRawRow {
     const read = (name: string) => (cells[columns.indexOf(name)] ?? '').trim();
-    const row: BulkRow = {
+    return {
       id: index + 1,
       line: index + 2,
       topic: read('topic'),
       date: read('date'),
       time: read('time'),
       caption: read('caption'),
-      errors: [],
+      platforms: null,
     };
-    row.errors = this.validate(row);
-    return row;
   }
 
-  private validate(row: BulkRow): string[] {
+  private validate(row: BulkRawRow): string[] {
     const errors: string[] = [];
-    if (row.topic.length < 5) errors.push('Topic needs at least 5 characters');
-    if (row.topic.length > 200) errors.push('Topic is longer than 200 characters');
-    if (!this.isRealDate(row.date)) errors.push('Date must look like 2026-12-31');
+    const topic = row.topic.trim();
+    if (topic.length < 5) errors.push('Topic needs at least 5 characters');
+    if (topic.length > 200) errors.push('Topic is longer than 200 characters');
+    if (!this.isRealDate(row.date)) errors.push('Choose a valid date');
     else if (row.date < this.today) errors.push('Date is in the past');
-    if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(row.time)) errors.push('Time must look like 14:30');
+    if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(row.time)) errors.push('Choose a valid time');
     if (row.caption.length > 2200) errors.push('Caption is too long');
     return errors;
   }
@@ -265,14 +344,14 @@ export class Bulk {
     return date.toLocaleDateString('en-CA');
   }
 
-  private buildRequest(row: BulkRow, caption: string): PostRequest {
+  private buildRequest(row: BulkCheckedRow, caption: string): PostRequest {
     return {
-      title: row.topic,
+      title: row.topic.trim(),
       caption,
-      platforms: this.selectedPlatforms,
+      platforms: row.chosen,
       publishMode: 'schedule',
       scheduledAt: `${row.date}T${row.time}`,
-      timezone: this.timezone,
+      timezone: this.state.timezone,
     };
   }
 }

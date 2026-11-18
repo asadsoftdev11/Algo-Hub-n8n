@@ -124,3 +124,25 @@ button:not(:disabled):active { transform: scale(0.98); }
 @media (prefers-reduced-motion: reduce) {
   .drift, .drift-reverse, .spin-slow { animation: none; }
 }
+
+.art-blend { mix-blend-mode: lighten; }
+
+.art-fade {
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 40%, transparent 72%);
+  mask-image: radial-gradient(ellipse at center, #000 40%, transparent 72%);
+}
+
+.art-fade-left {
+  -webkit-mask-image: linear-gradient(to left, #000 35%, transparent 95%);
+  mask-image: linear-gradient(to left, #000 35%, transparent 95%);
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.8; }
+}
+.breathe { animation: breathe 8s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .breathe { animation: none; opacity: 0.65; }
+}

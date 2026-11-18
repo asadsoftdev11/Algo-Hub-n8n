@@ -31,6 +31,7 @@ export class AuthService {
   readonly user = signal<User | null>(this.readSession());
   readonly isLoggedIn = computed(() => this.user() !== null);
   readonly isSubscribed = computed(() => (this.user()?.plan ?? 'trial') !== 'trial');
+  readonly isBusiness = computed(() => this.user()?.plan === 'business');
 
   async signUp(name: string, email: string, password: string, company = ''): Promise<void> {
     const key = this.normalize(email);
