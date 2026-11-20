@@ -14,6 +14,9 @@ import { Platform, PostRequest, PostsService } from '../../services/posts.servic
 import { parseCsv } from '../../shared/csv';
 import { Icon } from '../../shared/icon';
 import { PlatformIcon } from '../../shared/platform-icon';
+import { ToastService } from '../../services/toast.service';
+import { Reveal } from '../../shared/reveal.directive';
+
 
 type RowField = 'topic' | 'date' | 'time';
 
@@ -22,7 +25,7 @@ const ALL_PLATFORMS: Platform[] = ['TikTok', 'Instagram', 'Facebook', 'LinkedIn'
 
 @Component({
   selector: 'app-bulk',
-  imports: [FormsModule, RouterLink, Icon, PlatformIcon],
+  imports: [FormsModule, RouterLink, Icon, PlatformIcon, Reveal],
   templateUrl: './bulk.html',
 })
 export class Bulk {
@@ -30,6 +33,7 @@ export class Bulk {
   private accountsService = inject(AccountsService);
   readonly auth = inject(AuthService);
   readonly state = inject(BulkDraftService);
+  private toast = inject(ToastService);
 
   readonly stepLabels = ['Upload', 'Check', 'Review'];
   readonly timezones = Intl.supportedValuesOf('timeZone');
@@ -217,6 +221,7 @@ export class Bulk {
       const caption = keepCaption ? item.caption.trim() : '';
       const preview = await this.postsService.generateQuickPreview(this.buildRequest(item.row, caption));
       this.patchItem(id, { busy: false, decision: 'waiting', caption: preview.caption });
+      this.toast.success('A new video was created');
     } catch {
       this.patchItem(id, { busy: false });
       this.errorMessage.set('We could not create a new video. Please try again.');
@@ -284,6 +289,7 @@ export class Bulk {
       waiting.forEach((i) => this.postsService.saveDraft(this.buildRequest(i.row, i.caption.trim())));
       this.result.set({ scheduled: approved.length, drafts: waiting.length, discarded: this.discardedCount() });
       this.step.set('done');
+      this.toast.success(approved.length === 1 ? '1 post scheduled' : `${approved.length} posts scheduled`);
     } catch {
       this.errorMessage.set('We could not schedule your posts. Please try again.');
     } finally {

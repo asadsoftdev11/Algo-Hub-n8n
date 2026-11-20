@@ -1,11 +1,12 @@
-import { Component, signal } from '@angular/core';
+import { Component, HostListener, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Reveal } from '../../shared/reveal.directive';
 import { PlatformIcon } from '../../shared/platform-icon';
+import { MiniCalendar } from '../../shared/mini-calendar';
 
 @Component({
   selector: 'app-home',
-  imports: [RouterLink, Reveal, PlatformIcon],
+  imports: [RouterLink, Reveal, PlatformIcon, MiniCalendar],
   templateUrl: './home.html',
 })
 export class Home {
@@ -42,6 +43,11 @@ export class Home {
   ];
     marquee = Array.from({ length: 8 }, () => this.platforms).flat();
     menuOpen = signal(false);
+    calendarMarks = [2, 4, 8, 11, 15].map((n) => {
+    const d = new Date();
+    d.setDate(d.getDate() + n);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  });
       calendar = Array.from({ length: 15 }, (_, i) => ({
     x: 36 + (i % 5) * 42,
     y: 82 + Math.floor(i / 5) * 34,
@@ -52,4 +58,10 @@ export class Home {
     { topic: 'Three tips for better customer service', when: 'Tue, 14:00', platforms: 'LinkedIn, Facebook' },
     { topic: 'How to start a small online business', when: 'Thu, 09:00', platforms: 'Facebook' },
   ];
+    scrolled = signal(false);
+
+  @HostListener('window:scroll')
+  onScroll() {
+    this.scrolled.set(window.scrollY > 24);
+  }
 }

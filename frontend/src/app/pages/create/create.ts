@@ -1,10 +1,12 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, OnDestroy, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AccountsService } from '../../services/accounts.service';
 import { AuthService } from '../../services/auth.service';
+import { CreateDraftService } from '../../services/create-draft.service';
 import { PendingEdit, Platform, PostRequest, PostsService, PreviewResult, PublishMode } from '../../services/posts.service';
 import { PlatformIcon } from '../../shared/platform-icon';
+import { ToastService } from '../../services/toast.service';
 
 type Step = 'form' | 'generating' | 'preview' | 'publishing' | 'done';
 type Outcome = 'sent' | 'scheduled' | 'draft';
@@ -14,11 +16,13 @@ type Outcome = 'sent' | 'scheduled' | 'draft';
   imports: [FormsModule, RouterLink, PlatformIcon],
   templateUrl: './create.html',
 })
-export class Create {
+export class Create implements OnDestroy {
   private router = inject(Router);
   private postsService = inject(PostsService);
   private accountsService = inject(AccountsService);
   private auth = inject(AuthService);
+  private toast = inject(ToastService);
+  private drafts = inject(CreateDraftService);
 
   readonly stepLabels = ['Create', 'Review video', 'Publish'];
   readonly today = new Date().toISOString().slice(0, 10);
@@ -53,6 +57,7 @@ export class Create {
   constructor() {
     const pending = this.postsService.takePendingEdit();
     if (pending) this.loadEdit(pending);
+    else this.restoreWork();
   }
 
   get editing() {
@@ -120,6 +125,7 @@ export class Create {
     try {
       await this.postsService.publish(request, (i) => this.currentStage.set(i), this.saveOptions());
       this.outcome.set(request.publishMode === 'now' ? 'sent' : 'scheduled');
+      this.toast.success(request.publishMode === 'now' ? 'Your post was sent to your platforms' : 'Your post was scheduled');
       this.step.set('done');
     } catch {
       this.errorMessage.set('We could not send your post. Please try again.');
@@ -130,6 +136,7 @@ export class Create {
   saveDraft() {
     this.postsService.saveDraft(this.buildRequest(this.finalCaption.trim()), this.saveOptions());
     this.outcome.set('draft');
+    this.toast.success('Draft saved');
     this.step.set('done');
   }
 
@@ -159,6 +166,7 @@ export class Create {
 
     const wasEditing = this.editing;
     this.createAnother();
+    this.toast.info('Video discarded');
     if (wasEditing) this.router.navigate(['/app/posts']);
   }
 
@@ -182,6 +190,50 @@ export class Create {
     if (i < this.currentStage()) return 'bg-emerald-600 text-white';
     if (i === this.currentStage()) return 'bg-amber-100 text-amber-700';
     return 'bg-slate-100 text-slate-400';
+  }
+  ngOnDestroy() {
+    const hasWork = this.title.trim() !== '' || this.caption.trim() !== '';
+    const canKeep = this.step() === 'form' || this.step() === 'preview';
+
+    if (!this.auth.user() || !hasWork || !canKeep) {
+      this.drafts.snapshot = null;
+      return;
+    }
+
+    this.drafts.snapshot = {
+      title: this.title,
+      caption: this.caption,
+      finalCaption: this.finalCaption,
+      publishMode: this.publishMode,
+      scheduleDate: this.scheduleDate,
+      scheduleTime: this.scheduleTime,
+      timezone: this.timezone,
+      selected: this.platforms.filter((p) => p.selected).map((p) => p.name),
+      step: this.step() === 'preview' ? 'preview' : 'form',
+      preview: this.preview(),
+      ideaAtPreview: this.ideaAtPreview,
+      editingId: this.editingId,
+    };
+  }
+
+  private restoreWork() {
+    const saved = this.drafts.snapshot;
+    if (!saved) return;
+
+    this.title = saved.title;
+    this.caption = saved.caption;
+    this.finalCaption = saved.finalCaption;
+    this.publishMode = saved.publishMode;
+    this.scheduleDate = saved.scheduleDate;
+    this.scheduleTime = saved.scheduleTime;
+    this.timezone = saved.timezone;
+    this.platforms.forEach((p) => (p.selected = saved.selected.includes(p.name)));
+    this.preview.set(saved.preview);
+    this.ideaAtPreview = saved.ideaAtPreview;
+    this.editingId = saved.editingId;
+    this.step.set(saved.step);
+    this.drafts.snapshot = null;
+    this.toast.info('Your unfinished post was kept');
   }
 
   private loadEdit(edit: PendingEdit) {

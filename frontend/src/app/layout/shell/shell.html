@@ -1,6 +1,6 @@
 <div class="flex min-h-screen bg-slate-50">
   <aside
-    class="sticky top-0 hidden h-screen shrink-0 flex-col overflow-y-auto overflow-x-hidden bg-gradient-to-b from-emerald-700 to-emerald-800 transition-[width] duration-200 md:flex"
+    class="sticky top-0 hidden h-screen shrink-0 flex-col overflow-y-auto overflow-x-hidden bg-gradient-to-b from-emerald-700 to-emerald-800 transition-[width] duration-500 ease-out md:flex"
     [class]="collapsed() ? 'w-[4.5rem] p-3' : 'w-64 p-5'"
   >
     <a routerLink="/" class="mb-8 flex items-center gap-2 text-lg font-bold text-white" [class.justify-center]="collapsed()">
@@ -16,7 +16,7 @@
           [routerLink]="link.path"
           routerLinkActive="bg-white/20 text-white before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:rounded-r before:bg-accent-300"
           [attr.title]="collapsed() ? link.label : null"
-          class="relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-emerald-50 transition hover:bg-white/10"
+          class="relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-emerald-50 transition duration-300 hover:translate-x-1 hover:bg-white/10"
           [class.justify-center]="collapsed()"
         >
           <svg viewBox="0 0 24 24" class="h-5 w-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -25,7 +25,13 @@
           @if (!collapsed()) {
             <span class="flex-1">{{ link.label }}</span>
             @if (lockLabel(link)) {
-              <span class="rounded-full bg-accent-300 px-2 py-0.5 text-[10px] font-semibold uppercase text-emerald-900">{{ lockLabel(link) }}</span>
+              <span [attr.title]="lockLabel(link) === 'Locked' ? 'Available after you subscribe' : 'Included with the Business plan'" class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-accent-300 text-emerald-900">
+              @if (false) {
+                <svg viewBox="0 0 24 24" class="h-3 w-3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2" /><path d="M8 11V7a4 4 0 018 0v4" /></svg>
+              } @else {
+                <svg viewBox="0 0 24 24" class="h-3 w-3" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z" /></svg>
+              }
+            </span>
             }
             @if (link.path === '/app/posts' && failedCount() > 0) {
               <span class="rounded-full bg-red-500 px-2 py-0.5 text-[10px] font-bold text-white">{{ failedCount() }}</span>
@@ -127,6 +133,7 @@
               <a routerLink="/app/settings" (click)="closeUserMenu()" class="mt-1 block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">Settings</a>
               <a routerLink="/app/upgrade" (click)="closeUserMenu()" class="block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">Plans</a>
               <a routerLink="/app/support" (click)="closeUserMenu()" class="block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">Help and support</a>
+              <button (click)="toast.toggleMute()" class="block w-full rounded-lg px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-50">{{ toast.muted() ? 'Turn sound on' : 'Turn sound off' }}</button>
               <button (click)="logout()" class="block w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-red-600 hover:bg-red-50">Log out</button>
             </div>
           }

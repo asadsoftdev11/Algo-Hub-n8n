@@ -126,6 +126,9 @@
       <p class="font-semibold text-slate-900">Plan</p>
       <p class="mt-1 text-sm text-slate-500">You are on the {{ planLabel }}.</p>
     </div>
+    @if (auth.isSubscribed()) {
+      <button (click)="cancelPlan()" class="ml-auto rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-600 transition hover:border-red-200 hover:text-red-600">Cancel plan</button>
+    }
     <a routerLink="/app/upgrade" class="rounded-lg border border-emerald-600 px-4 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-50">
       Change plan
     </a>

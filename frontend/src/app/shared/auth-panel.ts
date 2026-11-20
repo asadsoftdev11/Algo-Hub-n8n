@@ -8,9 +8,9 @@ import { RouterLink } from '@angular/router';
   template: `
     <aside class="gradient-animated relative flex h-full min-h-screen flex-col justify-between overflow-hidden bg-gradient-to-br from-emerald-800 via-emerald-700 to-teal-600 p-10">
       <div class="pointer-events-none absolute inset-0 opacity-[0.07]" style="background-image: radial-gradient(#ffffff 1px, transparent 1px); background-size: 24px 24px;"></div>
-      <div class="drift pointer-events-none absolute -right-16 top-24 h-64 w-64 rounded-full bg-accent-300/20 blur-2xl"></div>
-      <div class="drift-reverse pointer-events-none absolute -left-20 bottom-32 h-72 w-72 rounded-full bg-teal-300/20 blur-2xl"></div>
-      <div class="spin-slow pointer-events-none absolute -right-10 bottom-16 h-44 w-44 rounded-full border border-dashed border-white/25"></div>
+      <div class="drift-fast pointer-events-none absolute -right-16 top-24 h-64 w-64 rounded-full bg-accent-300/20 blur-2xl"></div>
+      <div class="drift-fast-reverse pointer-events-none absolute -left-20 bottom-32 h-72 w-72 rounded-full bg-teal-300/20 blur-2xl"></div>
+      <div class="spin-medium pointer-events-none absolute -right-10 bottom-16 h-56 w-56 rounded-full border border-dashed border-white/25"></div>
 
       <a routerLink="/" class="relative flex items-center gap-2 text-lg font-bold text-white">
         <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-accent-300 text-emerald-900">A</span>
@@ -31,7 +31,12 @@ import { RouterLink } from '@angular/router';
       </div>
 
       <div class="relative">
-        <div class="hidden [@media(min-height:640px)]:block">
+        <div class="relative hidden [@media(min-height:640px)]:block">
+          <div class="pointer-events-none absolute inset-0 flex items-center justify-center">
+            <span class="ripple"></span>
+            <span class="ripple" style="animation-delay: 1.3s"></span>
+            <span class="ripple" style="animation-delay: 2.6s"></span>
+          </div>
           <img
             [src]="image()"
             alt=""
@@ -39,7 +44,7 @@ import { RouterLink } from '@angular/router';
             width="1024"
             height="765"
             decoding="async"
-            class="art-blend art-fade float-slow mx-auto h-auto max-h-60 w-auto"
+            class="art-blend art-fade float-lively relative mx-auto h-auto max-h-60 w-auto"
           />
         </div>
         <p class="mt-4 text-xs text-emerald-100/80">© 2026 AutoSocial AI</p>

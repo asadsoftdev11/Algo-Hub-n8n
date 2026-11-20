@@ -18,6 +18,8 @@ import { Posts } from './pages/posts/posts';
 import { Accounts } from './pages/accounts/accounts';
 import { Dashboard } from './pages/dashboard/dashboard';
 import { Contact } from './pages/contact/contact';
+import { VerifyEmail } from './pages/verify-email/verify-email';
+import { ResetPassword } from './pages/reset-password/reset-password';
 
 
 export const routes: Routes = [
@@ -25,6 +27,8 @@ export const routes: Routes = [
   { path: 'signin', component: Signin, title: 'Sign in - AutoSocial AI' },
   { path: 'signup', component: Signup, title: 'Create account - AutoSocial AI' },
   { path: 'forgot-password', component: ForgotPassword, title: 'Reset password - AutoSocial AI' },
+  { path: 'verify-email', component: VerifyEmail, title: 'Verify your email - AutoSocial AI' },
+  { path: 'reset-password', component: ResetPassword, title: 'Choose a new password - AutoSocial AI' },
   { path: 'privacy', component: Legal, data: { doc: 'privacy' }, title: 'Privacy Policy - AutoSocial AI' },
   { path: 'terms', component: Legal, data: { doc: 'terms' }, title: 'Terms of Service - AutoSocial AI' },
   { path: 'contact', component: Contact, data: { embedded: false }, title: 'Contact - AutoSocial AI' },

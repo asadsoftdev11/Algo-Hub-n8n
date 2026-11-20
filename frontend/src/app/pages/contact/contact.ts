@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { SupportService } from '../../services/support.service';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-contact',
@@ -13,6 +14,7 @@ export class Contact {
   private route = inject(ActivatedRoute);
   private auth = inject(AuthService);
   private support = inject(SupportService);
+  private toast = inject(ToastService);
 
   readonly embedded = this.route.snapshot.data['embedded'] === true;
   readonly contactEmail = 'support@algohub.com';
@@ -61,6 +63,7 @@ export class Contact {
         message: this.message.trim(),
       });
       this.sent.set(true);
+      this.toast.success('Message sent. We will reply by email.');
     } catch {
       this.errorMessage.set('We could not send your message. Please try again, or email us directly.');
     } finally {

@@ -2,6 +2,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { PostsService } from '../../services/posts.service';
+import { ToastService } from '../../services/toast.service';
 
 const COLLAPSE_KEY = 'autosocial_sidebar_collapsed';
 
@@ -14,6 +15,7 @@ export class Shell {
   private router = inject(Router);
   private postsService = inject(PostsService);
   auth = inject(AuthService);
+  readonly toast = inject(ToastService);
 
   menuOpen = signal(false);
   userMenuOpen = signal(false);
@@ -57,8 +59,8 @@ export class Shell {
   }
 
   lockLabel(link: { paidOnly: boolean; requires?: string }) {
-    if (link.paidOnly && !this.auth.isSubscribed()) return 'Locked';
     if (link.requires === 'business' && !this.auth.isBusiness()) return 'Business';
+    if (link.paidOnly && !this.auth.isSubscribed()) return 'Locked';
     return '';
   }
 
@@ -89,6 +91,7 @@ export class Shell {
     this.closeMenu();
     this.closeUserMenu();
     this.auth.signOut();
+    this.toast.info('You have been logged out');
     this.router.navigate(['/signin']);
   }
 

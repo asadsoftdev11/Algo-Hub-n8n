@@ -100,6 +100,20 @@ export class AuthService {
   async requestPasswordReset(_email: string): Promise<void> {
     await new Promise((resolve) => setTimeout(resolve, 600));
   }
+    async resetPassword(_token: string, _newPassword: string): Promise<void> {
+    await new Promise((resolve) => setTimeout(resolve, 600));
+  }
+
+  async resendVerification(_email: string): Promise<void> {
+    await new Promise((resolve) => setTimeout(resolve, 600));
+  }
+
+  async cancelSubscription(): Promise<void> {
+    const { key, account } = this.requireAccount();
+    account.plan = 'trial';
+    this.saveAccount(key, account);
+    this.startSession(key, account);
+  }
 
   async requestDataDeletion(): Promise<void> {}
 

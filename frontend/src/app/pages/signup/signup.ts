@@ -3,6 +3,7 @@ import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { AuthPanel } from '../../shared/auth-panel';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-signup',
@@ -12,6 +13,7 @@ import { AuthPanel } from '../../shared/auth-panel';
 export class Signup {
   private router = inject(Router);
   private auth = inject(AuthService);
+  private toast = inject(ToastService);
 
   fullName = '';
   company = '';
@@ -29,6 +31,7 @@ export class Signup {
     this.errorMessage.set('');
     try {
       await this.auth.signUp(this.fullName.trim(), this.email.trim(), this.password, this.company.trim());
+      this.toast.success('Account created. Welcome to AutoSocial AI!');
       this.router.navigate(['/app/demo']);
     } catch {
       this.errorMessage.set('We could not create your account. If you already have one, try signing in instead.');

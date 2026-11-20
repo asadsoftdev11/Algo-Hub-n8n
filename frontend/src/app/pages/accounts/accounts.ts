@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { AccountsService, AccountStatus } from '../../services/accounts.service';
 import { Platform } from '../../services/posts.service';
 import { PlatformIcon } from '../../shared/platform-icon';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-accounts',
@@ -10,6 +11,7 @@ import { PlatformIcon } from '../../shared/platform-icon';
 })
 export class Accounts {
   private accountsService = inject(AccountsService);
+  private toast = inject(ToastService);
   accounts = this.accountsService.accounts;
 
   statusStyle: Record<AccountStatus, string> = {
@@ -18,14 +20,16 @@ export class Accounts {
     Expired: 'bg-amber-100 text-amber-800',
   };
 
-  connect(platform: Platform) {
-    this.accountsService.connect(platform);
+    async connect(platform: Platform) {
+    await this.accountsService.connect(platform);
+    this.toast.success(`${platform} connected`);
   }
 
-  disconnect(platform: Platform) {
+  async disconnect(platform: Platform) {
     const ok = confirm(`Disconnect ${platform}? Scheduled posts for this account will not be sent.`);
     if (ok) {
-      this.accountsService.disconnect(platform);
+      await this.accountsService.disconnect(platform);
+      this.toast.info(`${platform} disconnected`);
     }
   }
 }

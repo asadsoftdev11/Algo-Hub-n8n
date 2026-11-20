@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-settings',
@@ -10,6 +11,7 @@ import { AuthService } from '../../services/auth.service';
 })
 export class Settings {
   auth = inject(AuthService);
+  private toast = inject(ToastService);
 
   readonly timezones = Intl.supportedValuesOf('timeZone');
 
@@ -91,6 +93,7 @@ export class Settings {
       timezone: this.timezone,
     });
     this.profileSaved.set(true);
+    this.toast.success('Profile saved');
   }
 
   async changeEmail() {
@@ -101,6 +104,8 @@ export class Settings {
       this.newEmail = '';
       this.emailPassword = '';
       this.emailChanged.set(true);
+      this.toast.success('Email updated');
+      this.toast.success('Profile saved');
     } catch {
       this.emailError.set('We could not change your email. Check your password, and make sure the new address is not already in use.');
     }
@@ -115,9 +120,16 @@ export class Settings {
       this.newPassword = '';
       this.confirmPassword = '';
       this.passwordChanged.set(true);
+      this.toast.success('Password updated');
     } catch {
       this.passwordError.set('Your current password is not correct. Please try again.');
     }
+  }
+  
+  async cancelPlan() {
+    if (!confirm('Cancel your plan? You will go back to the free trial and lose access to publishing.')) return;
+    await this.auth.cancelSubscription();
+    this.toast.info('Your plan was cancelled');
   }
 
   async requestDeletion() {
@@ -125,5 +137,6 @@ export class Settings {
     if (!ok) return;
     await this.auth.requestDataDeletion();
     this.deletionRequested.set(true);
+    this.toast.info('Deletion request received');
   }
 }

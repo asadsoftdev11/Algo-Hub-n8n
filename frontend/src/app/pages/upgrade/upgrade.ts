@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService, PaidPlan } from '../../services/auth.service';
 import { Reveal } from '../../shared/reveal.directive';
+import { ToastService } from '../../services/toast.service';
 
 interface PlanOption {
   id: PaidPlan;
@@ -21,6 +22,7 @@ interface PlanOption {
 export class Upgrade {
   private router = inject(Router);
   auth = inject(AuthService);
+  private toast = inject(ToastService);
   busy = signal(false);
 
   plans: PlanOption[] = [
@@ -32,6 +34,7 @@ export class Upgrade {
   async choose(plan: PlanOption) {
     this.busy.set(true);
     await this.auth.subscribe(plan.id);
+    this.toast.success(`You are now on the ${plan.name} plan`);
     this.busy.set(false);
     this.router.navigate(['/app/create']);
   }

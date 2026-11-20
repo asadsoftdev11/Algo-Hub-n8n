@@ -4,10 +4,11 @@ import { CountUp } from '../../shared/count-up.directive';
 import { AccountsService } from '../../services/accounts.service';
 import { PostStatus, PostsService } from '../../services/posts.service';
 import { PlatformIcon } from '../../shared/platform-icon';
+import { MiniCalendar } from '../../shared/mini-calendar';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [RouterLink, CountUp, PlatformIcon],
+  imports: [RouterLink, CountUp, PlatformIcon, MiniCalendar],
   templateUrl: './dashboard.html',
 })
 export class Dashboard {
@@ -16,6 +17,12 @@ export class Dashboard {
 
   accounts = this.accountsService.accounts;
   recent = computed(() => this.postsService.posts().slice(0, 5));
+  scheduled = computed(() => this.postsService.posts().filter((p) => p.status === 'Scheduled'));
+  scheduledDays = computed(() =>
+    this.scheduled()
+      .map((p) => (p.request?.scheduledAt ?? p.when).slice(0, 10))
+      .filter((day) => /^\d{4}-\d{2}-\d{2}$/.test(day)),
+  );
 
      stats = computed(() => {
     const posts = this.postsService.posts();

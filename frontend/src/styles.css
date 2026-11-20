@@ -1,7 +1,7 @@
 @import "tailwindcss";
 @theme {
-  --color-accent-200: #e6ee9c;
-  --color-accent-300: #d4e157;
+  --color-accent-200: #f3ec9a;
+  --color-accent-300: #e8dc4f;
 }
 @keyframes float-slow {
   0%, 100% { transform: translateY(0); }
@@ -34,7 +34,7 @@
 }
 html { scroll-behavior: smooth; }
 section[id] { scroll-margin-top: 4rem; }
-main > * { animation: fade-up 0.35s ease-out both; }
+main > * { animation: fade-up 0.6s var(--ease-soft) both; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
@@ -145,4 +145,83 @@ button:not(:disabled):active { transform: scale(0.98); }
 
 @media (prefers-reduced-motion: reduce) {
   .breathe { animation: none; opacity: 0.65; }
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(16px) scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes toast-bar {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(0); }
+}
+
+.toast-in { animation: toast-in 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.toast-bar { transform-origin: left; animation: toast-bar linear forwards; }
+
+@media (prefers-reduced-motion: reduce) {
+  .toast-in { animation: none; }
+  .toast-bar { display: none; }
+}
+
+:root { --ease-soft: cubic-bezier(0.22, 1, 0.36, 1); }
+
+a, button, input, select, textarea {
+  transition-property: background-color, border-color, color, box-shadow, transform, translate, scale, opacity;
+  transition-duration: 0.4s;
+  transition-timing-function: var(--ease-soft);
+}
+button:active { transition-duration: 0.1s; }
+
+@keyframes float-lively {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-16px) rotate(1.5deg); }
+}
+@keyframes ripple {
+  0% { transform: scale(0.5); opacity: 0.5; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+.float-lively { animation: fade-up 0.8s ease-out both, float-lively 5s ease-in-out 0.8s infinite; }
+.ripple {
+  position: absolute;
+  width: 14rem;
+  height: 14rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  animation: ripple 4s ease-out infinite;
+}
+.spin-medium { animation: spin-slow 18s linear infinite; }
+.drift-fast { animation: drift 9s ease-in-out infinite; }
+.drift-fast-reverse { animation: drift-reverse 10s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .float-lively, .ripple, .spin-medium, .drift-fast, .drift-fast-reverse { animation: none; }
+}
+
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes pop {
+  0% { transform: scale(0.6); opacity: 0; }
+  60% { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes burst {
+  from { transform: translate(-50%, -50%) rotate(var(--angle)) translateY(0); opacity: 1; }
+  to { transform: translate(-50%, -50%) rotate(var(--angle)) translateY(-3.6rem); opacity: 0; }
+}
+
+.check-circle { stroke-dasharray: 145; stroke-dashoffset: 145; animation: draw 0.7s ease-out forwards; }
+.check-mark { stroke-dasharray: 40; stroke-dashoffset: 40; animation: draw 0.45s ease-out 0.55s forwards; }
+.pop { animation: pop 0.5s var(--ease-soft) both; }
+.burst-dot { animation: burst 0.9s ease-out 0.5s both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .check-circle, .check-mark { animation: none; stroke-dashoffset: 0; }
+  .pop { animation: none; }
+  .burst-dot { display: none; }
+}
+
+.mask-x {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
 }
