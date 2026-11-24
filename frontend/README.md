@@ -1,59 +1,26 @@
-# Frontend
+# AutoSocial AI (frontend)
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.2.5.
+Public website for an n8n AI social media automation. Angular (standalone components) and Tailwind CSS.
 
-## Development server
+## Run it
 
-To start a local development server, run:
+1. `cd frontend`
+2. `npm install`
+3. `ng serve`, then open `http://localhost:4200`
 
-```bash
-ng serve
-```
+## Demo mode
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+`src/environments/environment.ts` has `demo: true`. In demo mode sign-in, plans, posts, accounts, payments, emails and publishing are simulated in the browser. Nothing real is posted or charged.
 
-## Code scaffolding
+## Connecting the backend
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Only these files need real calls: `auth.service.ts`, `posts.service.ts`, `accounts.service.ts`, `billing.service.ts`, `support.service.ts`. Use `core/api.service.ts` for requests. Then set `demo: false` and `apiUrl` in the environment files.
 
-```bash
-ng generate component component-name
-```
+## Pages
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Public: home, sign up, sign in, forgot and reset password, verify email, contact, privacy, terms.
+Signed in: demo, plans, create post, bulk schedule (Business plan), posts, accounts, dashboard, settings, help.
 
-```bash
-ng generate --help
-```
+## Plans
 
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Starter $9, Creator $19, Business $49. A free account includes the demo only.

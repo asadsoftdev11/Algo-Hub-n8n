@@ -1,4 +1,5 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, computed, effect, inject, signal, untracked } from '@angular/core';
+import { AuthService } from './auth.service';
 
 export type Platform = 'TikTok' | 'Instagram' | 'Facebook' | 'LinkedIn';
 export type PublishMode = 'now' | 'schedule';
@@ -66,6 +67,19 @@ export class PostsService {
   ];
 
   private nextId = 100;
+  private auth = inject(AuthService);
+  private owner = computed(() => this.auth.user()?.email ?? null);
+  private readonly initialPosts = this.posts();
+
+  constructor() {
+    effect(() => {
+      this.owner();
+      untracked(() => {
+        this.posts.set(this.initialPosts);
+        this.pendingEdit = null;
+      });
+    });
+  }
   private pendingEdit: PendingEdit | null = null;
 
   publishStagesFor(mode: PublishMode): string[] {

@@ -1,4 +1,5 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, computed, effect, inject, signal, untracked } from '@angular/core';
+import { AuthService } from './auth.service';
 import { Platform } from './posts.service';
 
 export type AccountStatus = 'Connected' | 'Not connected' | 'Expired';
@@ -16,6 +17,17 @@ export class AccountsService {
     { platform: 'Facebook', status: 'Not connected' },
     { platform: 'LinkedIn', status: 'Not connected' },
   ]);
+
+  private auth = inject(AuthService);
+  private owner = computed(() => this.auth.user()?.email ?? null);
+  private readonly initialAccounts = this.accounts();
+
+  constructor() {
+    effect(() => {
+      this.owner();
+      untracked(() => this.accounts.set(this.initialAccounts));
+    });
+  }
 
   isConnected(platform: Platform): boolean {
     return this.accounts().some((a) => a.platform === platform && a.status === 'Connected');

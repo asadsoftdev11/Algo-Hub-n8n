@@ -1,4 +1,4 @@
-import { Injectable, effect, inject, untracked } from '@angular/core';
+import { Injectable, computed, effect, inject, untracked } from '@angular/core';
 import { AuthService } from './auth.service';
 import { Platform, PreviewResult, PublishMode } from './posts.service';
 
@@ -20,12 +20,13 @@ export interface CreateSnapshot {
 @Injectable({ providedIn: 'root' })
 export class CreateDraftService {
   private auth = inject(AuthService);
+  private owner = computed(() => this.auth.user()?.email ?? null);
 
   snapshot: CreateSnapshot | null = null;
 
   constructor() {
     effect(() => {
-      this.auth.user();
+      this.owner();
       untracked(() => (this.snapshot = null));
     });
   }

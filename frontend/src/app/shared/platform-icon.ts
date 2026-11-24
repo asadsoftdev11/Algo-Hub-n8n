@@ -1,17 +1,17 @@
 import { Component, computed, input } from '@angular/core';
 
 const BACKGROUNDS: Record<string, string> = {
-  TikTok: 'bg-slate-900',
-  LinkedIn: 'bg-sky-700',
-  Facebook: 'bg-blue-600',
-  Instagram: 'bg-gradient-to-tr from-amber-400 via-pink-500 to-fuchsia-600',
+  TikTok: 'bg-gradient-to-br from-slate-700 to-black',
+  LinkedIn: 'bg-gradient-to-br from-sky-500 to-sky-800',
+  Facebook: 'bg-gradient-to-br from-blue-500 to-blue-700',
+  Instagram: 'bg-gradient-to-tr from-amber-300 via-pink-500 to-fuchsia-600',
 };
 
 @Component({
   selector: 'app-platform-icon',
   template: `
     <span
-      class="inline-flex shrink-0 items-center justify-center rounded-md text-white"
+      class="relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-md text-white shadow-md ring-1 ring-white/20 before:absolute before:inset-x-0 before:top-0 before:h-1/2 before:bg-gradient-to-b before:from-white/40 before:to-transparent"
       [class]="background()"
       [style.width.px]="size()"
       [style.height.px]="size()"

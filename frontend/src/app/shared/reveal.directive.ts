@@ -1,6 +1,6 @@
 import { Directive, ElementRef, OnDestroy, OnInit, inject } from '@angular/core';
 
-@Directive({ selector: '.reveal' })
+@Directive({ selector: '.reveal, [appReveal]' })
 export class Reveal implements OnInit, OnDestroy {
   private el = inject<ElementRef<HTMLElement>>(ElementRef);
   private observer?: IntersectionObserver;

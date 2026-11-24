@@ -30,6 +30,8 @@ export class Home {
     { title: 'Published on schedule', text: 'Your post goes live on the platforms you pick, at the time you choose.' },
   ];
 
+  featureImages = ['images/prism.webp', 'images/review.webp', 'images/pipeline.webp'];
+
   features = [
     { title: 'Less manual work', text: 'No separate writing, downloading, and uploading. One idea starts the whole process.' },
     { title: 'Stay consistent', text: 'Keep posting every day without spending hours on it.' },
@@ -37,9 +39,9 @@ export class Home {
   ];
 
     plans = [
-    { name: 'Starter', price: '$9', popular: false, icon: 'M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z', tint: 'bg-sky-100 text-sky-700', features: ['1 connected account', 'Limited scheduled posts', 'Email support'] },
-    { name: 'Creator', price: '$19', popular: true, icon: 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z', tint: 'bg-emerald-100 text-emerald-700', features: ['Several connected accounts', 'Higher post allowance', 'Email support'] },
-    { name: 'Business', price: '$49', popular: false, icon: 'M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16', tint: 'bg-violet-100 text-violet-700', features: ['More connected accounts', 'Bulk scheduling from spreadsheets', 'Higher usage limits', 'Priority support'] },
+    { name: 'Starter', price: '$9', popular: false, icon: 'M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z', tint: 'bg-sky-100 text-sky-700', surface: 'from-amber-50 via-white to-white', features: ['1 connected account', 'Limited scheduled posts', 'Email support'] },
+    { name: 'Creator', price: '$19', popular: true, icon: 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z', tint: 'bg-emerald-100 text-emerald-700', surface: 'from-emerald-50 via-white to-amber-50', features: ['Several connected accounts', 'Higher post allowance', 'Email support'] },
+    { name: 'Business', price: '$49', popular: false, icon: 'M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16', tint: 'bg-violet-100 text-violet-700', surface: 'from-sky-50 via-white to-blue-50', features: ['More connected accounts', 'Bulk scheduling from spreadsheets', 'Higher usage limits', 'Priority support'] },
   ];
     marquee = Array.from({ length: 8 }, () => this.platforms).flat();
     menuOpen = signal(false);
@@ -48,11 +50,6 @@ export class Home {
     d.setDate(d.getDate() + n);
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   });
-      calendar = Array.from({ length: 15 }, (_, i) => ({
-    x: 36 + (i % 5) * 42,
-    y: 82 + Math.floor(i / 5) * 34,
-    active: [2, 6, 11].includes(i),
-  }));
     bulkRows = [
     { topic: '5 daily habits for a productive morning', when: 'Mon, 10:30', platforms: 'TikTok, Instagram' },
     { topic: 'Three tips for better customer service', when: 'Tue, 14:00', platforms: 'LinkedIn, Facebook' },

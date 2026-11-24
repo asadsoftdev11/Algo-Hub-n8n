@@ -17,7 +17,7 @@
   </div>
   <div class="flex flex-wrap items-center justify-between gap-4">
     <div>
-      <h2 class="text-2xl font-bold text-slate-900">Dashboard</h2>
+      <h2 class="text-2xl font-extrabold tracking-tight text-slate-900">Dashboard</h2>
       <p class="mt-1 text-sm text-slate-500">A quick look at your posts and accounts.</p>
     </div>
     <a routerLink="/app/create" class="rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700">
@@ -36,7 +36,7 @@
   </div>
 
   <div class="mt-6 grid gap-6 lg:grid-cols-3">
-    <div class="rounded-xl border border-slate-200 bg-white p-5 lg:col-span-2">
+    <div class="rounded-xl border border-slate-200 bg-white shadow-sm p-5 lg:col-span-2">
       <div class="flex items-center justify-between">
         <p class="font-semibold text-slate-900">Upcoming posts</p>
         <a routerLink="/app/create" class="text-sm font-semibold text-emerald-700 hover:underline">Schedule one</a>
@@ -64,7 +64,7 @@
     <app-mini-calendar [marked]="scheduledDays()" />
   </div>
 
-  <div class="mt-6 rounded-xl border border-slate-200 bg-white p-5">
+  <div class="mt-6 rounded-xl border border-slate-200 bg-white shadow-sm p-5">
     <div class="flex items-center justify-between">
       <p class="font-semibold text-slate-900">Connected accounts</p>
       <a routerLink="/app/accounts" class="text-sm font-semibold text-emerald-700 hover:underline">Manage</a>
@@ -79,7 +79,7 @@
     </div>
   </div>
 
-  <div class="mt-6 rounded-xl border border-slate-200 bg-white">
+  <div class="mt-6 rounded-xl border border-slate-200 bg-white shadow-sm">
     <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4">
       <p class="font-semibold text-slate-900">Recent activity</p>
       <a routerLink="/app/posts" class="text-sm font-semibold text-emerald-700 hover:underline">View all posts</a>

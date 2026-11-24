@@ -1,4 +1,5 @@
 import { Injectable, computed, signal } from '@angular/core';
+import { environment } from '../../environments/environment';
 
 export type PaidPlan = 'starter' | 'creator' | 'business';
 export type Plan = 'trial' | PaidPlan;
@@ -32,13 +33,14 @@ export class AuthService {
   readonly isLoggedIn = computed(() => this.user() !== null);
   readonly isSubscribed = computed(() => (this.user()?.plan ?? 'trial') !== 'trial');
   readonly isBusiness = computed(() => this.user()?.plan === 'business');
+  readonly isDemo = environment.demo;
 
   async signUp(name: string, email: string, password: string, company = ''): Promise<void> {
     const key = this.normalize(email);
     if (this.readAccounts()[key]) {
       throw new Error('Account already exists');
     }
-    const tenantId = crypto.randomUUID();
+    const tenantId = this.newId();
     const account: Account = {
       passwordHash: await this.hash(password, tenantId),
       tenantId,
@@ -144,7 +146,14 @@ export class AuthService {
     return account.passwordHash === (await this.hash(password, account.tenantId));
   }
 
+  private newId() {
+    return globalThis.crypto?.randomUUID?.() ?? `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+  }
+
   private async hash(password: string, salt: string) {
+    if (!globalThis.crypto?.subtle) {
+      return Array.from(`${salt}:${password}`, (c) => c.charCodeAt(0).toString(16)).join('');
+    }
     const data = new TextEncoder().encode(`${salt}:${password}`);
     const digest = await crypto.subtle.digest('SHA-256', data);
     return Array.from(new Uint8Array(digest))

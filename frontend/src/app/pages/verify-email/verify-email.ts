@@ -10,7 +10,7 @@ import { AuthPanel } from '../../shared/auth-panel';
   templateUrl: './verify-email.html',
 })
 export class VerifyEmail {
-  private auth = inject(AuthService);
+  readonly auth = inject(AuthService);
   private toast = inject(ToastService);
 
   readonly email = this.auth.user()?.email ?? 'your email address';

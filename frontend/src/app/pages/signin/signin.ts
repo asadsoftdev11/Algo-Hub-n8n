@@ -19,14 +19,20 @@ export class Signin {
   password = '';
   errorMessage = signal('');
 
+   busy = signal(false);
+
   async submit() {
+    if (this.busy()) return;
+    this.busy.set(true);
     this.errorMessage.set('');
     try {
       await this.auth.signIn(this.email.trim(), this.password);
       this.toast.success('Signed in successfully');
-      this.router.navigate([this.auth.isSubscribed() ? '/app/create' : '/app/demo']);
+      await this.router.navigate([this.auth.isSubscribed() ? '/app/create' : '/app/demo']);
     } catch {
       this.errorMessage.set('Email or password is incorrect.');
+    } finally {
+      this.busy.set(false);
     }
   }
 }

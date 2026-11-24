@@ -11,7 +11,7 @@
         </svg>
       </div>
 
-      <h1 class="mt-5 text-2xl font-bold text-slate-900">Check your email</h1>
+      <h1 class="mt-5 text-2xl font-extrabold tracking-tight text-slate-900">Check your email</h1>
       <p class="mt-2 text-sm text-slate-600">
         We sent a confirmation link to
         <span class="font-semibold text-slate-800">{{ email }}</span>.
@@ -28,6 +28,9 @@
 
       <p class="mt-6 text-xs text-slate-500">Cannot find it? Check your spam folder.</p>
       <a routerLink="/signin" class="mt-4 inline-block text-sm font-semibold text-emerald-700 hover:underline">Back to sign in</a>
+      @if (auth.isDemo) {
+        <a routerLink="/app/demo" class="ml-4 mt-4 inline-block text-sm font-semibold text-slate-500 hover:underline">Continue to the demo</a>
+      }
     </div>
   </div>
 </div>

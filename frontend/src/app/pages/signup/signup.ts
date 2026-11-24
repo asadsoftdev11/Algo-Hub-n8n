@@ -27,14 +27,20 @@ export class Signup {
     return this.confirm !== '' && this.password !== this.confirm;
   }
 
+  busy = signal(false);
+
   async submit() {
+    if (this.busy()) return;
+    this.busy.set(true);
     this.errorMessage.set('');
     try {
       await this.auth.signUp(this.fullName.trim(), this.email.trim(), this.password, this.company.trim());
       this.toast.success('Account created. Welcome to AutoSocial AI!');
-      this.router.navigate(['/app/demo']);
+      await this.router.navigate(['/verify-email']);
     } catch {
       this.errorMessage.set('We could not create your account. If you already have one, try signing in instead.');
+    } finally {
+      this.busy.set(false);
     }
   }
 }
