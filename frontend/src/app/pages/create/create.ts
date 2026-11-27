@@ -7,6 +7,8 @@ import { CreateDraftService } from '../../services/create-draft.service';
 import { PendingEdit, Platform, PostRequest, PostsService, PreviewResult, PublishMode } from '../../services/posts.service';
 import { PlatformIcon } from '../../shared/platform-icon';
 import { ToastService } from '../../services/toast.service';
+import { ConfirmService } from '../../services/confirm.service';
+import { LimitsService } from '../../services/limits.service';
 
 type Step = 'form' | 'generating' | 'preview' | 'publishing' | 'done';
 type Outcome = 'sent' | 'scheduled' | 'draft';
@@ -22,6 +24,8 @@ export class Create implements OnDestroy {
   private accountsService = inject(AccountsService);
   private auth = inject(AuthService);
   private toast = inject(ToastService);
+  private dialog = inject(ConfirmService);
+  readonly limits = inject(LimitsService);
   private drafts = inject(CreateDraftService);
 
   readonly stepLabels = ['Create', 'Review video', 'Publish'];
@@ -87,6 +91,11 @@ export class Create implements OnDestroy {
 
   async createPreview() {
     if (!this.isValid) return;
+        if (this.limits.videosLeft() < 1) {
+      this.toast.error('You have used all your videos this month. Upgrade your plan to create more.');
+      return;
+    }
+    this.limits.useVideos();
     const run = ++this.runId;
     this.errorMessage.set('');
     this.preview.set(null);
@@ -118,6 +127,10 @@ export class Create implements OnDestroy {
   async approve() {
     const request = this.buildRequest(this.finalCaption.trim());
     this.errorMessage.set('');
+    if (request.publishMode === 'schedule' && !this.editing && this.limits.scheduledLeft() < 1) {
+      this.toast.error('You have reached the scheduled posts limit for your plan. Upgrade to schedule more.');
+      return;
+    }
     this.stages.set(this.postsService.publishStagesFor(request.publishMode));
     this.currentStage.set(0);
     this.step.set('publishing');
@@ -158,11 +171,18 @@ export class Create implements OnDestroy {
     this.step.set('preview');
   }
 
-  discard() {
+  async discard() {
     const message = this.editing
       ? 'Leave without saving? The saved post stays as it was.'
       : 'Discard this video? It will not be saved or published.';
-    if (!confirm(message)) return;
+        const ok = await this.dialog.ask({
+      title: this.editing ? 'Leave without saving?' : 'Discard this video?',
+      message,
+      confirmText: this.editing ? 'Leave' : 'Discard',
+      cancelText: 'Keep working',
+      danger: true,
+    });
+    if (!ok) return;
 
     const wasEditing = this.editing;
     this.createAnother();

@@ -58,7 +58,7 @@
           </thead>
           <tbody>
             @for (p of shownPosts(); track p.id) {
-              <tr class="border-t border-slate-100 align-top">
+              <tr class="border-t border-slate-100 align-top transition-colors hover:bg-emerald-50/40">
                 <td class="px-5 py-4">
                   <p class="font-medium text-slate-800">{{ p.title }}</p>
                   @if (p.error) {

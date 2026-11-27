@@ -3,6 +3,7 @@ import { Router, RouterLink } from '@angular/router';
 import { PostRecord, PostStatus, PostsService } from '../../services/posts.service';
 import { PlatformIcon } from '../../shared/platform-icon';
 import { ToastService } from '../../services/toast.service';
+import { ConfirmService } from '../../services/confirm.service';
 
 type Filter = 'All' | PostStatus;
 
@@ -15,6 +16,7 @@ export class Posts {
   private postsService = inject(PostsService);
   private router = inject(Router);
   private toast = inject(ToastService);
+  private dialog = inject(ConfirmService);
 
   readonly filters: Filter[] = ['All', 'Draft', 'Scheduled', 'Processing', 'Published', 'Failed'];
   activeFilter = signal<Filter>('All');
@@ -57,16 +59,28 @@ export class Posts {
     }
   }
 
-   remove(post: PostRecord) {
+   async remove(post: PostRecord) {
     const note = post.status === 'Published' ? ' Posts already published stay on the platform.' : '';
-    if (confirm(`Delete "${post.title}" from AutoSocial AI? This cannot be undone.${note}`)) {
+        const ok = await this.dialog.ask({
+      title: 'Delete post?',
+      message: `"${post.title}" will be removed from AutoSocial AI. This cannot be undone.${note}`,
+      confirmText: 'Delete',
+      danger: true,
+    });
+    if (ok) {
       this.postsService.deletePost(post.id);
       this.toast.success('Post deleted');
     }
   }
 
-  cancelSchedule(post: PostRecord) {
-    if (confirm('Cancel the schedule? The post will be kept as a draft.')) {
+  async cancelSchedule(post: PostRecord) {
+        const ok = await this.dialog.ask({
+      title: 'Cancel schedule?',
+      message: 'The post will be kept as a draft and will not be published.',
+      confirmText: 'Cancel schedule',
+      cancelText: 'Keep schedule',
+    });
+    if (ok) {
       this.postsService.cancelSchedule(post.id);
       this.toast.info('Schedule cancelled. The post was kept as a draft.');
     }

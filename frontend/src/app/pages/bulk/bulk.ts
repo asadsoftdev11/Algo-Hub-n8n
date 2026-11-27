@@ -15,6 +15,8 @@ import { parseCsv } from '../../shared/csv';
 import { Icon } from '../../shared/icon';
 import { PlatformIcon } from '../../shared/platform-icon';
 import { ToastService } from '../../services/toast.service';
+import { ConfirmService } from '../../services/confirm.service';
+import { LimitsService } from '../../services/limits.service';
 import { Reveal } from '../../shared/reveal.directive';
 
 
@@ -34,6 +36,8 @@ export class Bulk {
   readonly auth = inject(AuthService);
   readonly state = inject(BulkDraftService);
   private toast = inject(ToastService);
+  private dialog = inject(ConfirmService);
+  readonly limits = inject(LimitsService);
 
   readonly stepLabels = ['Upload', 'Check', 'Review'];
   readonly timezones = Intl.supportedValuesOf('timeZone');
@@ -51,6 +55,10 @@ export class Bulk {
 
   errorMessage = signal('');
   saving = signal(false);
+
+  constructor() {
+    if (this.step() !== 'upload') this.toast.info('Your bulk work was kept');
+  }
 
   checkedRows = computed<BulkCheckedRow[]>(() =>
     this.rows().map((row) => {
@@ -166,9 +174,14 @@ export class Bulk {
   }
 
   async createPreviews() {
-    const rows = this.validRows();
+   const rows = this.validRows();
     if (!this.canCreatePreviews) return;
 
+    if (rows.length > this.limits.videosLeft()) {
+      this.errorMessage.set(`You have ${this.limits.videosLeft()} videos left this month. Remove some rows or upgrade your plan.`);
+      return;
+    }
+    this.limits.useVideos(rows.length);
     const run = ++this.state.runId;
     this.errorMessage.set('');
     this.progress.set(0);
@@ -196,8 +209,17 @@ export class Bulk {
     this.step.set('check');
   }
 
-  backToCheck() {
-    if (this.items().length > 0 && !confirm('Going back will discard your review choices. Continue?')) return;
+  async backToCheck() {
+        if (this.items().length > 0) {
+      const ok = await this.dialog.ask({
+        title: 'Go back?',
+        message: 'Going back will discard your review choices.',
+        confirmText: 'Go back',
+        cancelText: 'Stay here',
+        danger: true,
+      });
+      if (!ok) return;
+    }
     this.items.set([]);
     this.step.set('check');
   }
@@ -214,7 +236,12 @@ export class Bulk {
 
   async regenerateItem(id: number, keepCaption = true) {
     const item = this.items().find((i) => i.row.id === id);
-    if (!item || item.busy) return;
+     if (!item || item.busy) return;
+    if (this.limits.videosLeft() < 1) {
+      this.toast.error('You have used all your videos this month. Upgrade your plan to create more.');
+      return;
+    }
+    this.limits.useVideos();
 
     this.patchItem(id, { busy: true, edit: null, editError: '' });
     try {
@@ -279,6 +306,22 @@ export class Bulk {
     const items = this.items();
     const approved = items.filter((i) => i.decision === 'approved');
     const waiting = items.filter((i) => i.decision === 'waiting');
+    if (approved.length > this.limits.scheduledLeft()) {
+      this.errorMessage.set(`Your plan allows ${this.limits.limit().scheduled} scheduled posts at a time (${this.limits.scheduledLeft()} left). Approve fewer videos or upgrade your plan.`);
+      return;
+    }
+
+    const discarded = this.discardedCount();
+    const ok = await this.dialog.ask({
+      title: approved.length === 0 ? 'Nothing is approved' : 'Schedule these posts?',
+      message:
+        approved.length === 0
+          ? `No video is approved, so nothing will be scheduled. ${waiting.length} will be saved as drafts and ${discarded} discarded.`
+          : `${approved.length} will be scheduled, ${waiting.length} saved as drafts and ${discarded} discarded. Discarded videos cannot be recovered.`,
+      confirmText: approved.length === 0 ? 'Save as drafts' : 'Schedule',
+      cancelText: 'Go back and review',
+    });
+    if (!ok) return;
 
     this.saving.set(true);
     this.errorMessage.set('');

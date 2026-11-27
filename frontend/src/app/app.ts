@@ -2,11 +2,12 @@ import { Component, HostListener, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { ScrollTop } from './shared/scroll-top';
 import { Toasts } from './shared/toasts';
+import { ConfirmDialog } from './shared/confirm-dialog';
 import { ToastService } from './services/toast.service';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, ScrollTop, Toasts],
+  imports: [RouterOutlet, ScrollTop, Toasts, ConfirmDialog],
   templateUrl: './app.html',
 })
 export class App {

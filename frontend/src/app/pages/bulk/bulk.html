@@ -4,6 +4,14 @@
     <span class="rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold text-violet-700">Business plan</span>
   </div>
   <p class="mt-1 text-sm text-slate-500">Upload a spreadsheet of topics and dates. You review every video before it is scheduled.</p>
+  @if (auth.isBusiness()) {
+    <p class="mt-2 inline-flex flex-wrap items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold" [class]="limits.videosLeft() === 0 ? 'bg-red-50 text-red-700' : 'bg-emerald-50 text-emerald-800'">
+      {{ limits.videosLeft() }} of {{ limits.limit().videos }} videos left this month
+      @if (limits.videosLeft() === 0) {
+        <a routerLink="/app/upgrade" class="underline">Upgrade</a>
+      }
+    </p>
+  }
 
   @if (!auth.isBusiness()) {
     <div class="mt-6 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
@@ -188,7 +196,7 @@
           </div>
           <p class="mt-2 text-xs text-slate-500">
             Greyed-out platforms are not connected.
-            <a routerLink="/app/accounts" class="font-semibold text-emerald-700 hover:underline">Connect accounts</a>
+            <a routerLink="/app/accounts" [queryParams]="{ returnTo: '/app/bulk' }" class="font-semibold text-emerald-700 hover:underline">Connect accounts</a>
           </p>
         </div>
 

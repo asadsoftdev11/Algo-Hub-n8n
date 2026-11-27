@@ -5,6 +5,7 @@ import { AccountsService } from '../../services/accounts.service';
 import { PostStatus, PostsService } from '../../services/posts.service';
 import { PlatformIcon } from '../../shared/platform-icon';
 import { MiniCalendar } from '../../shared/mini-calendar';
+import { LimitsService } from '../../services/limits.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -14,6 +15,7 @@ import { MiniCalendar } from '../../shared/mini-calendar';
 export class Dashboard {
   private postsService = inject(PostsService);
   private accountsService = inject(AccountsService);
+  readonly limits = inject(LimitsService);
 
   accounts = this.accountsService.accounts;
   recent = computed(() => this.postsService.posts().slice(0, 5));

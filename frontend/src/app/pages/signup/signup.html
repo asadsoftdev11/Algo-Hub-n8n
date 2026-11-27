@@ -25,14 +25,18 @@
           </div>
           <div>
             <label class="mb-1 block text-sm font-medium text-slate-700">Password</label>
+            <app-password-field>
             <input name="password" type="password" autocomplete="new-password" required minlength="8" [(ngModel)]="password"
               placeholder="At least 8 characters"
               class="w-full rounded-lg border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+              </app-password-field>
           </div>
           <div>
             <label class="mb-1 block text-sm font-medium text-slate-700">Confirm password</label>
+            <app-password-field>
             <input name="confirm" type="password" autocomplete="new-password" required [(ngModel)]="confirm" placeholder="Repeat your password"
               class="w-full rounded-lg border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+              </app-password-field>
             @if (mismatch) {
             <p class="mt-1 text-xs text-red-600">Passwords do not match.</p>
             }

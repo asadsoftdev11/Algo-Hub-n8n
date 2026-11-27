@@ -1,5 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { PasswordField } from '../../shared/password-field';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { ToastService } from '../../services/toast.service';
@@ -7,7 +8,7 @@ import { AuthPanel } from '../../shared/auth-panel';
 
 @Component({
   selector: 'app-reset-password',
-  imports: [FormsModule, RouterLink, AuthPanel],
+  imports: [FormsModule, RouterLink, AuthPanel, PasswordField],
   templateUrl: './reset-password.html',
 })
 export class ResetPassword {

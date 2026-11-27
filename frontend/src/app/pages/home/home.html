@@ -11,8 +11,8 @@
       <a routerLink="/contact" class="rounded-lg px-4 py-2 text-emerald-50 transition hover:bg-white/10">Contact</a>
     </nav>
     <div class="flex items-center gap-3">
-      <a routerLink="/signin" class="hidden rounded-lg px-4 py-2 text-sm font-medium text-emerald-50 transition hover:bg-white/10 sm:inline">Sign in</a>
-      <a routerLink="/signup" class="rounded-lg bg-accent-300 px-4 py-2 text-sm font-semibold text-emerald-900 transition hover:bg-accent-200">Get started</a>
+      <a routerLink="/signin" [hidden]="auth.isLoggedIn()" class="hidden rounded-lg px-4 py-2 text-sm font-medium text-emerald-50 transition hover:bg-white/10 sm:inline">Sign in</a>
+      <a [routerLink]="auth.isLoggedIn() ? '/app' : '/signup'" class="rounded-lg bg-accent-300 px-4 py-2 text-sm font-semibold text-emerald-900 transition hover:bg-accent-200">{{ auth.isLoggedIn() ? 'Open app' : 'Get started' }}</a>
       <button (click)="menuOpen.set(!menuOpen())" aria-label="Open menu"
         class="rounded-lg border border-white/20 px-3 py-1.5 text-lg leading-none text-white md:hidden">☰</button>
     </div>
@@ -24,7 +24,7 @@
       <a href="#features" (click)="menuOpen.set(false)" class="block rounded-lg px-3 py-2.5 text-sm font-medium text-emerald-50">Features</a>
       <a href="#pricing" (click)="menuOpen.set(false)" class="block rounded-lg px-3 py-2.5 text-sm font-medium text-emerald-50">Pricing</a>
       <a routerLink="/contact" class="block rounded-lg px-3 py-2.5 text-sm font-medium text-emerald-50">Contact</a>
-      <a routerLink="/signin" class="block rounded-lg px-3 py-2.5 text-sm font-medium text-emerald-50">Sign in</a>
+      <a routerLink="/signin" [hidden]="auth.isLoggedIn()" class="block rounded-lg px-3 py-2.5 text-sm font-medium text-emerald-50">Sign in</a>
     </nav>
   }
 </header>
@@ -45,7 +45,7 @@
         Type one topic. AI writes the script, creates the video, and posts it to your social media on your schedule. You review everything before it goes out.
       </p>
       <div class="mt-8 flex flex-wrap gap-3">
-        <a routerLink="/signup" class="rounded-lg bg-accent-300 px-5 py-2.5 text-sm font-semibold text-emerald-900 transition hover:bg-accent-200">Create your account</a>
+        <a [routerLink]="auth.isLoggedIn() ? '/app' : '/signup'" class="rounded-lg bg-accent-300 px-5 py-2.5 text-sm font-semibold text-emerald-900 transition hover:bg-accent-200">{{ auth.isLoggedIn() ? 'Go to your app' : 'Create your account' }}</a>
         <a href="#how" class="rounded-lg border border-white/40 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10">See how it works</a>
       </div>
       <p class="mt-3 text-xs text-emerald-100/80">A free account includes the demo. Publishing needs a plan.</p>
@@ -176,7 +176,7 @@
         <li class="flex gap-3"><span class="font-bold text-emerald-600">3</span> Choose platforms for each topic</li>
         <li class="flex gap-3"><span class="font-bold text-emerald-600">4</span> Review each video, then schedule</li>
       </ul>
-      <a routerLink="/signup" class="shine mt-8 inline-block rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700">Get started</a>
+      <a [routerLink]="auth.isLoggedIn() ? '/app' : '/signup'" class="shine mt-8 inline-block rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700">{{ auth.isLoggedIn() ? 'Open app' : 'Get started' }}</a>
     </div>
 
     <div class="reveal rounded-xl border border-slate-200 bg-white shadow-sm p-5 shadow-lg">
@@ -235,7 +235,7 @@
               <li>✓ {{ f }}</li>
             }
           </ul>
-          <a routerLink="/signup" class="mt-6 rounded-lg bg-emerald-600 py-2.5 text-center font-semibold text-white hover:bg-emerald-700">Choose {{ p.name }}</a>
+          <a [routerLink]="auth.isLoggedIn() ? '/app/upgrade' : '/signup'" class="mt-6 rounded-lg bg-emerald-600 py-2.5 text-center font-semibold text-white hover:bg-emerald-700">Choose {{ p.name }}</a>
         </div>
       }
     </div>
@@ -260,7 +260,7 @@
           <h2 class="text-3xl font-extrabold text-white">Ready to plan your next post?</h2>
           <p class="mt-3 text-emerald-50/90">Create your account, watch the demo, and choose the plan that fits you.</p>
           <div class="mt-6 flex flex-wrap gap-3">
-            <a routerLink="/signup" class="rounded-lg bg-accent-300 px-5 py-2.5 text-sm font-semibold text-emerald-900 transition hover:bg-accent-200">Create your account</a>
+            <a [routerLink]="auth.isLoggedIn() ? '/app' : '/signup'" class="rounded-lg bg-accent-300 px-5 py-2.5 text-sm font-semibold text-emerald-900 transition hover:bg-accent-200">{{ auth.isLoggedIn() ? 'Go to your app' : 'Create your account' }}</a>
             <a routerLink="/contact" class="rounded-lg border border-white/40 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10">Talk to us</a>
           </div>
         </div>
@@ -296,8 +296,8 @@
       <p class="text-sm font-semibold text-white">Company</p>
       <ul class="mt-4 space-y-2 text-sm text-emerald-200/80">
         <li><a routerLink="/contact" class="hover:text-white">Contact us</a></li>
-        <li><a routerLink="/signin" class="hover:text-white">Sign in</a></li>
-        <li><a routerLink="/signup" class="hover:text-white">Create account</a></li>
+        <li><a routerLink="/signin" [hidden]="auth.isLoggedIn()" class="hover:text-white">Sign in</a></li>
+        <li [hidden]="auth.isLoggedIn()"><a routerLink="/signup" class="hover:text-white">Create account</a></li>
         <li><a routerLink="/privacy" class="hover:text-white">Privacy Policy</a></li>
         <li><a routerLink="/terms" class="hover:text-white">Terms of Service</a></li>
       </ul>

@@ -67,8 +67,10 @@
       </div>
       <div>
         <label class="mb-1 block text-sm font-medium text-slate-700">Your password</label>
+        <app-password-field>
         <input name="emailPassword" type="password" autocomplete="current-password" [(ngModel)]="emailPassword"
           class="w-full rounded-lg border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+          </app-password-field>
       </div>
       @if (emailError()) {
         <p class="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{{ emailError() }}</p>
@@ -90,18 +92,24 @@
     <form (ngSubmit)="changePassword()" class="mt-4 space-y-4">
       <div>
         <label class="mb-1 block text-sm font-medium text-slate-700">Current password</label>
+        <app-password-field>
         <input name="currentPassword" type="password" autocomplete="current-password" [(ngModel)]="currentPassword"
           class="w-full rounded-lg border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+          </app-password-field>
       </div>
       <div>
         <label class="mb-1 block text-sm font-medium text-slate-700">New password</label>
+        <app-password-field>
         <input name="newPassword" type="password" autocomplete="new-password" [(ngModel)]="newPassword" placeholder="At least 8 characters"
           class="w-full rounded-lg border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+          </app-password-field>
       </div>
       <div>
         <label class="mb-1 block text-sm font-medium text-slate-700">Confirm new password</label>
+        <app-password-field>
         <input name="confirmPassword" type="password" autocomplete="new-password" [(ngModel)]="confirmPassword"
           class="w-full rounded-lg border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+          </app-password-field>
         @if (passwordMismatch) {
           <p class="mt-1 text-xs text-red-600">Passwords do not match.</p>
         }

@@ -1,17 +1,20 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { PasswordField } from '../../shared/password-field';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { ToastService } from '../../services/toast.service';
+import { ConfirmService } from '../../services/confirm.service';
 
 @Component({
   selector: 'app-settings',
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, PasswordField],
   templateUrl: './settings.html',
 })
 export class Settings {
   auth = inject(AuthService);
   private toast = inject(ToastService);
+  private dialog = inject(ConfirmService);
 
   readonly timezones = Intl.supportedValuesOf('timeZone');
 
@@ -127,13 +130,25 @@ export class Settings {
   }
   
   async cancelPlan() {
-    if (!confirm('Cancel your plan? You will go back to the free trial and lose access to publishing.')) return;
+      const ok = await this.dialog.ask({
+      title: 'Cancel your plan?',
+      message: 'You will go back to the free trial and lose access to publishing.',
+      confirmText: 'Cancel plan',
+      cancelText: 'Keep my plan',
+      danger: true,
+    });
+    if (!ok) return;
     await this.auth.cancelSubscription();
     this.toast.info('Your plan was cancelled');
   }
 
   async requestDeletion() {
-    const ok = confirm('Request deletion of your account and data? This cannot be undone.');
+      const ok = await this.dialog.ask({
+      title: 'Delete your account and data?',
+      message: 'This cannot be undone.',
+      confirmText: 'Request deletion',
+      danger: true,
+    });
     if (!ok) return;
     await this.auth.requestDataDeletion();
     this.deletionRequested.set(true);
